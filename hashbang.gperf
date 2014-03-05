@@ -1,0 +1,33 @@
+%{
+#include "pair.h"
+%}
+struct pair;
+
+%%
+awk, "AWK"
+bash, "Shell"
+bigloo, "Scheme"
+ccl, "Common Lisp"
+chicken, "Scheme"
+clisp, "Common Lisp"
+coffee, "CoffeeScript"
+ecl, "Common Lisp"
+gawk, "AWK"
+groovy, "Groovy"
+guile, "Scheme"
+lisp, "Common Lisp"
+lua, "Lua"
+make, "Make"
+mawk, "AWK"
+nawk, "AWK"
+osascript, "AppleScript"
+perl, "Perl"
+php, "PHP"
+python, "Python"
+racket, "Scheme"
+ruby, "Ruby"
+sbcl, "Common Lisp"
+sed, "SED"
+sh, "Shell"
+tcl, "TCL"
+zsh, "Shell"

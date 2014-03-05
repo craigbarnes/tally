@@ -1,0 +1,16 @@
+%{
+#include "pair.h"
+%}
+struct pair;
+
+%%
+Makefile, "Make"
+makefile, "Make"
+GNUmakefile, "Make"
+BSDMakefile, "Make"
+vimrc, "VimL"
+.vimrc, "VimL"
+gvimrc, "VimL"
+.gvimrc, "VimL"
+emacs, "Emacs Lisp"
+.emacs, "Emacs Lisp"
