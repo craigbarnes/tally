@@ -13,7 +13,7 @@ const struct pair *names(register const char*, register unsigned int);
 static const char *findext(const char *filename) {
     const char *dot = strrchr(filename, '.');
     if(!dot || dot == filename) {
-        return "";
+        return NULL;
     }
     return dot + 1;
 }
@@ -23,9 +23,11 @@ static const char *gettype(const char *filename, int base) {
     const char *ext = findext(basename);
     const struct pair *ret;
 
-    ret = findtype(ext, strlen(ext));
-    if (ret)
-        return ret->value;
+    if (ext) {
+        ret = findtype(ext, strlen(ext));
+        if (ret)
+            return ret->value;
+    }
 
     ret = names(basename, strlen(basename));
     if (ret)
@@ -37,11 +39,10 @@ static const char *gettype(const char *filename, int base) {
 static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
     (void)s; // Unused
     const char *basename = f + ftw->base;
-    const char *ext = findext(basename);
     const bool ignored = (basename[0] == '.' && ftw->level > 0);
 
     if (t == FTW_F && !ignored) {
-        printf("%-16s | %-8s |", basename, ext);
+        printf("%-16s", basename);
         const char *lang = gettype(f, ftw->base);
         if (lang) {
             printf(" %s", lang);
