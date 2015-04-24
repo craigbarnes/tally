@@ -6,11 +6,10 @@
 #include <string.h>
 #include "pair.h"
 
-// TODO: Make naming more consistent
-const struct pair *findtype(register const char*, register unsigned int);
-const struct pair *names(register const char*, register unsigned int);
+const struct pair *lookup_language_by_extension(const char*, unsigned int);
+const struct pair *lookup_language_by_filename(const char*, unsigned int);
 
-static const char *findext(const char *filename) {
+static inline const char *file_extension(const char *filename) {
     const char *dot = strrchr(filename, '.');
     if(!dot || dot == filename) {
         return NULL;
@@ -18,18 +17,18 @@ static const char *findext(const char *filename) {
     return dot + 1;
 }
 
-static const char *gettype(const char *filename, int base) {
+static const char *detect_language(const char *filename, int base) {
     const char *basename = filename + base;
-    const char *ext = findext(basename);
+    const char *ext = file_extension(basename);
     const struct pair *ret;
 
     if (ext) {
-        ret = findtype(ext, strlen(ext));
+        ret = lookup_language_by_extension(ext, strlen(ext));
         if (ret)
             return ret->value;
     }
 
-    ret = names(basename, strlen(basename));
+    ret = lookup_language_by_filename(basename, strlen(basename));
     if (ret)
         return ret->value;
 
@@ -43,7 +42,7 @@ static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
 
     if (t == FTW_F && !ignored) {
         printf("%-16s", basename);
-        const char *lang = gettype(f, ftw->base);
+        const char *lang = detect_language(f, ftw->base);
         if (lang) {
             printf(" %s", lang);
         }

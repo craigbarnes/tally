@@ -6,7 +6,7 @@
 %omit-struct-type
 %readonly-tables
 %includes
-%define lookup-function-name hashbang
+%define lookup-function-name lookup_language_by_hashbang
 struct pair;
 
 %%

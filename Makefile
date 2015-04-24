@@ -3,8 +3,8 @@ GPERF  = gperf
 
 all: ctally
 
-ctally: ctally.o findtype.o hashbang.o names.o
-findtype.o hashbang.o names.o ctally.o: pair.h
+ctally: ctally.o extensions.o filenames.o
+ctally.o extensions.o hashbangs.o filenames.o: pair.h
 
 %.c: %.gperf
 	$(GPERF) -L ANSI-C $< > $@
