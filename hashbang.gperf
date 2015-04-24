@@ -1,6 +1,12 @@
 %{
 #include "pair.h"
 %}
+
+%struct-type
+%omit-struct-type
+%readonly-tables
+%includes
+%define lookup-function-name hashbang
 struct pair;
 
 %%

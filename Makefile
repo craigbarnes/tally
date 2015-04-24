@@ -1,21 +1,17 @@
-CFLAGS = -g -O2 -Wall
+CFLAGS = -g -O2 -std=c99 -pedantic -Wall
+GPERF  = gperf
 
 all: ctally
 
 ctally: ctally.o findtype.o hashbang.o names.o
-
-ctally.o: ctally.c pair.h
-findtype.o: findtype.c pair.h
-hashbang.o: hashbang.c pair.h
-names.o: names.c pair.h
+findtype.o hashbang.o names.o ctally.o: pair.h
 
 %.c: %.gperf
-	gperf -ItTC -L ANSI-C -N $* $< > $@
+	$(GPERF) -L ANSI-C $< > $@
 
 clean:
-	$(RM) ctally ctally.o findtype.[co] hashbang.[co] names.[co]
+	$(RM) ctally *.o
 
 
-.PHONY: clean
-.SECONDARY: findtype.c hashbang.c names.c
+.PHONY: all clean
 .DELETE_ON_ERROR:
