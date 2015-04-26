@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "pair.h"
+#include <assert.h>
+#include "languages.h"
+#include "names.h"
 
 const struct pair *lookup_language_by_extension(const char*, unsigned int);
 const struct pair *lookup_language_by_filename(const char*, unsigned int);
@@ -17,7 +19,7 @@ static inline const char *file_extension(const char *filename) {
     return dot + 1;
 }
 
-static const char *detect_language(const char *filename, int base) {
+static Language detect_language(const char *filename, int base) {
     const char *basename = filename + base;
     const char *ext = file_extension(basename);
     const struct pair *ret;
@@ -25,14 +27,14 @@ static const char *detect_language(const char *filename, int base) {
     if (ext) {
         ret = lookup_language_by_extension(ext, strlen(ext));
         if (ret)
-            return ret->value;
+            return ret->language;
     }
 
     ret = lookup_language_by_filename(basename, strlen(basename));
     if (ret)
-        return ret->value;
+        return ret->language;
 
-    return NULL;
+    return 0;
 }
 
 static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
@@ -41,12 +43,14 @@ static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
     const bool ignored = (basename[0] == '.' && ftw->level > 0);
 
     if (t == FTW_F && !ignored) {
-        printf("%-16s", basename);
-        const char *lang = detect_language(f, ftw->base);
+        printf("%-16s  ", basename);
+        Language lang = detect_language(f, ftw->base);
+        assert(lang < NUM_LANGUAGES);
         if (lang) {
-            printf(" %s", lang);
+            puts(language_names[lang]);
+        } else {
+            puts("-");
         }
-        printf("\n");
     }
 
     if (t == FTW_D && ignored) {

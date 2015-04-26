@@ -1,5 +1,5 @@
 %{
-#include "pair.h"
+#include "languages.h"
 %}
 
 %struct-type
@@ -7,33 +7,34 @@
 %readonly-tables
 %includes
 %define lookup-function-name lookup_language_by_hashbang
+%define slot-name key
 struct pair;
 
 %%
-awk, "AWK"
-bash, "Shell"
-bigloo, "Scheme"
-ccl, "Common Lisp"
-chicken, "Scheme"
-clisp, "Common Lisp"
-coffee, "CoffeeScript"
-ecl, "Common Lisp"
-gawk, "AWK"
-groovy, "Groovy"
-guile, "Scheme"
-lisp, "Common Lisp"
-lua, "Lua"
-make, "Make"
-mawk, "AWK"
-nawk, "AWK"
-osascript, "AppleScript"
-perl, "Perl"
-php, "PHP"
-python, "Python"
-racket, "Scheme"
-ruby, "Ruby"
-sbcl, "Common Lisp"
-sed, "SED"
-sh, "Shell"
-tcl, "TCL"
-zsh, "Shell"
+awk, AWK
+bash, SHELL
+bigloo, SCHEME
+ccl, COMMONLISP
+chicken, SCHEME
+clisp, COMMONLISP
+coffee, COFFEESCRIPT
+ecl, COMMONLISP
+gawk, AWK
+groovy, GROOVY
+guile, SCHEME
+lisp, COMMONLISP
+lua, LUA
+make, MAKE
+mawk, AWK
+nawk, AWK
+osascript, APPLESCRIPT
+perl, PERL
+php, PHP
+python, PYTHON
+racket, SCHEME
+ruby, RUBY
+sbcl, COMMONLISP
+sed, SED
+sh, SHELL
+tcl, TCL
+zsh, SHELL

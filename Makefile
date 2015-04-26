@@ -4,7 +4,7 @@ GPERF  = gperf
 all: ctally
 
 ctally: ctally.o extensions.o filenames.o
-ctally.o extensions.o hashbangs.o filenames.o: pair.h
+ctally.o extensions.o hashbangs.o filenames.o: languages.h
 
 %.c: %.gperf
 	$(GPERF) -L ANSI-C $< > $@

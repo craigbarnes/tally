@@ -1,5 +1,5 @@
 %{
-#include "pair.h"
+#include "languages.h"
 %}
 
 %struct-type
@@ -7,16 +7,17 @@
 %readonly-tables
 %includes
 %define lookup-function-name lookup_language_by_filename
+%define slot-name key
 struct pair;
 
 %%
-Makefile, "Make"
-makefile, "Make"
-GNUmakefile, "Make"
-BSDMakefile, "Make"
-vimrc, "VimL"
-.vimrc, "VimL"
-gvimrc, "VimL"
-.gvimrc, "VimL"
-emacs, "Emacs Lisp"
-.emacs, "Emacs Lisp"
+Makefile, MAKE
+makefile, MAKE
+GNUmakefile, MAKE
+BSDMakefile, MAKE
+vimrc, VIML
+.vimrc, VIML
+gvimrc, VIML
+.gvimrc, VIML
+emacs, EMACSLISP
+.emacs, EMACSLISP

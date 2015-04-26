@@ -1,5 +1,5 @@
 %{
-#include "pair.h"
+#include "languages.h"
 %}
 
 %struct-type
@@ -7,94 +7,94 @@
 %readonly-tables
 %includes
 %define lookup-function-name lookup_language_by_extension
+%define slot-name key
 struct pair;
 
 %%
-adb, "Ada"
-ads, "Ada"
-applescript, "AppleScript"
-scpt, "AppleScript"
-asm, "Assembly"
-S, "Assembly"
-awk, "AWK"
-auk, "AWK"
-gawk, "AWK"
-mawk, "AWK"
-nawk, "AWK"
-bash, "Shell"
-bat, "Batchfile"
-btm, "Batchfile"
-cmd, "Batchfile"
-c, "C"
-cpp, "C++"
-cxx, "C++"
-cc, "C++"
-C, "C++"
-cl, "Common Lisp"
-asd, "Common Lisp"
-lsp, "Common Lisp"
-coffee, "CoffeeScript"
-cson, "CoffeeScript"
-cs, "C#"
-css, "CSS"
-d, "D"
-dart, "Dart"
-el, "Emacs Lisp"
-emacs, "Emacs Lisp"
-go, "Go"
-gperf, "gperf"
-groovy, "Groovy"
-h, "C Header"
-hpp, "C++ Header"
-hxx, "C++ Header"
-hh, "C++ Header"
-H, "C++ Header"
-hs, "Haskell"
-htm, "HTML"
-html, "HTML"
-xhtml, "HTML"
-ini, "INI"
-desktop, "INI"
-java, "Java"
-js, "JavaScript"
-json, "JSON"
-l, "Lex"
-lua, "Lua"
-m, "Objective-C"
-markdown, "Markdown"
-md, "Markdown"
-mkd, "Markdown"
-mk, "Make"
-mak, "Make"
-make, "Make"
-mm, "Objective-C++"
-moon, "MoonScript"
-page, "Mallard"
-pc, "pkg-config"
-perl, "Perl"
-pl, "Perl"
-pm, "Perl"
-php, "PHP"
-proto, "Protocol Buffer"
-py, "Python"
-rb, "Ruby"
-rs, "Rust"
-scm, "Scheme"
-sld, "Scheme"
-sls, "Scheme"
-ss, "Scheme"
-scss, "SCSS"
-sed, "SED"
-sh, "Shell"
-sql, "SQL"
-tcl, "TCL"
-tex, "TeX"
-cls, "TeX"
-sty, "TeX"
-ltx, "TeX"
-vala, "Vala"
-vim, "VimL"
-xml, "XML"
-y, "Yacc"
-yaml, "YAML"
-yml, "YAML"
+adb, ADA
+ads, ADA
+applescript, APPLESCRIPT
+asd, COMMONLISP
+asm, ASSEMBLY
+auk, AWK
+awk, AWK
+bash, SHELL
+bat, BATCHFILE
+btm, BATCHFILE
+c, C
+cc, CPLUSPLUS
+C, CPLUSPLUS
+cl, COMMONLISP
+cls, TEX
+cmd, BATCHFILE
+coffee, COFFEESCRIPT
+cpp, CPLUSPLUS
+cs, CSHARP
+cson, COFFEESCRIPT
+css, CSS
+cxx, CPLUSPLUS
+dart, DART
+d, D
+desktop, INI
+el, EMACSLISP
+emacs, EMACSLISP
+gawk, AWK
+go, GO
+gperf, GPERF
+groovy, GROOVY
+h, CHEADER
+H, CPLUSPLUSHEADER
+hh, CPLUSPLUSHEADER
+hpp, CPLUSPLUSHEADER
+hs, HASKELL
+htm, HTML
+html, HTML
+hxx, CPLUSPLUSHEADER
+ini, INI
+java, JAVA
+js, JAVASCRIPT
+json, JSON
+l, LEX
+lsp, COMMONLISP
+ltx, TEX
+lua, LUA
+make, MAKE
+mak, MAKE
+markdown, MARKDOWN
+mawk, AWK
+md, MARKDOWN
+mkd, MARKDOWN
+mk, MAKE
+m, OBJECTIVEC
+moon, MOONSCRIPT
+nawk, AWK
+page, MALLARD
+pc, PKGCONFIG
+perl, PERL
+php, PHP
+pl, PERL
+pm, PERL
+proto, PROTOBUF
+py, PYTHON
+rb, RUBY
+rs, RUST
+S, ASSEMBLY
+scm, SCHEME
+scpt, APPLESCRIPT
+scss, SCSS
+sed, SED
+sh, SHELL
+sld, SCHEME
+sls, SCHEME
+sql, SQL
+ss, SCHEME
+sty, TEX
+tcl, TCL
+tex, TEX
+vala, VALA
+vim, VIML
+xhtml, HTML
+xml, XML
+yaml, YAML
+yml, YAML
+y, YACC
