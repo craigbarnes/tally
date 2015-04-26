@@ -1,7 +1,10 @@
 #pragma once
+#include <stdio.h>
+#include <stdlib.h>
 #include "languages.h"
 
 static const char *const language_names[NUM_LANGUAGES] = {
+    [0] = "",
     [ADA] = "Ada",
     [APPLESCRIPT] = "AppleScript",
     [ASSEMBLY] = "Assembly",
@@ -54,3 +57,14 @@ static const char *const language_names[NUM_LANGUAGES] = {
     [YACC] = "YACC",
     [YAML] = "YAML"
 };
+
+static inline const char *lookup_language_name(Language lang) {
+    assert(lang >= 0);
+    assert(lang < NUM_LANGUAGES);
+    const char *name = language_names[lang];
+    if (!name) {
+        fprintf(stderr, "Error: language_names[%d] is missing\n", lang);
+        abort();
+    }
+    return name;
+}

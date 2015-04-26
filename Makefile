@@ -1,4 +1,5 @@
-CFLAGS = -g -O2 -std=c99 -pedantic -Wall
+CWARNS = -Wall -Wextra -pedantic -Wno-missing-field-initializers
+CFLAGS = -g -O2 -std=c99 $(CWARNS)
 GPERF  = gperf
 
 all: ctally

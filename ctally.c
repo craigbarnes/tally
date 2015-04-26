@@ -43,14 +43,8 @@ static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
     const bool ignored = (basename[0] == '.' && ftw->level > 0);
 
     if (t == FTW_F && !ignored) {
-        printf("%-16s  ", basename);
         Language lang = detect_language(f, ftw->base);
-        assert(lang < NUM_LANGUAGES);
-        if (lang) {
-            puts(language_names[lang]);
-        } else {
-            puts("-");
-        }
+        printf("%-16s  %s\n", basename, lookup_language_name(lang));
     }
 
     if (t == FTW_D && ignored) {
