@@ -8,7 +8,7 @@
 %includes
 %define lookup-function-name lookup_language_by_hashbang
 %define slot-name key
-struct pair;
+LanguageHashSlot;
 
 %%
 awk, AWK

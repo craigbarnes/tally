@@ -8,8 +8,8 @@
 #include "languages.h"
 #include "names.h"
 
-const struct pair *lookup_language_by_extension(const char*, unsigned int);
-const struct pair *lookup_language_by_filename(const char*, unsigned int);
+const LanguageHashSlot *lookup_language_by_extension(const char*, unsigned int);
+const LanguageHashSlot *lookup_language_by_filename(const char*, unsigned int);
 
 static inline const char *file_extension(const char *filename) {
     const char *dot = strrchr(filename, '.');
@@ -20,21 +20,19 @@ static inline const char *file_extension(const char *filename) {
 }
 
 static Language detect_language(const char *filename, int base) {
-    const char *basename = filename + base;
-    const char *ext = file_extension(basename);
-    const struct pair *ret;
+    const char *const basename = filename + base;
+    const char *const ext = file_extension(basename);
+    const LanguageHashSlot *slot = NULL;
 
-    if (ext) {
-        ret = lookup_language_by_extension(ext, strlen(ext));
-        if (ret)
-            return ret->language;
+    if (ext && (slot = lookup_language_by_extension(ext, strlen(ext)))) {
+        return slot->language;
     }
 
-    ret = lookup_language_by_filename(basename, strlen(basename));
-    if (ret)
-        return ret->language;
+    if ((slot = lookup_language_by_filename(basename, strlen(basename)))) {
+        return slot->language;
+    }
 
-    return 0;
+    return UNKNOWN;
 }
 
 static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
@@ -43,8 +41,9 @@ static int cb(const char *f, const struct stat *s, int t, struct FTW *ftw) {
     const bool ignored = (basename[0] == '.' && ftw->level > 0);
 
     if (t == FTW_F && !ignored) {
+        const char *path = (f[0] == '.' && f[1] == '/') ? f + 2 : f;
         Language lang = detect_language(f, ftw->base);
-        printf("%-16s  %s\n", basename, lookup_language_name(lang));
+        printf("%-20s  %s\n", path, lookup_language_name(lang));
     }
 
     if (t == FTW_D && ignored) {

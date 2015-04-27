@@ -4,7 +4,8 @@
 #include "languages.h"
 
 static const char *const language_names[NUM_LANGUAGES] = {
-    [0] = "",
+    [UNKNOWN] = "?",
+    [IGNORED] = "!",
     [ADA] = "Ada",
     [APPLESCRIPT] = "AppleScript",
     [ASSEMBLY] = "Assembly",

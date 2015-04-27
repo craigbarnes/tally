@@ -1,7 +1,9 @@
 #pragma once
 
 typedef enum {
-    ADA = 1,
+    UNKNOWN = 0,
+    IGNORED,
+    ADA,
     APPLESCRIPT,
     ASSEMBLY,
     AWK,
@@ -55,7 +57,7 @@ typedef enum {
     NUM_LANGUAGES
 } Language;
 
-struct pair {
+typedef struct {
     const char *key;
     Language language;
-};
+} LanguageHashSlot;

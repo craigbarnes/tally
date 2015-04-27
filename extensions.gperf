@@ -8,7 +8,7 @@
 %includes
 %define lookup-function-name lookup_language_by_extension
 %define slot-name key
-struct pair;
+LanguageHashSlot;
 
 %%
 adb, ADA
@@ -98,3 +98,22 @@ xml, XML
 yaml, YAML
 yml, YAML
 y, YACC
+#
+a, IGNORED
+bz2, IGNORED
+dat, IGNORED
+diff, IGNORED
+gif, IGNORED
+gz, IGNORED
+jpeg, IGNORED
+jpg, IGNORED
+o, IGNORED
+obj, IGNORED
+out, IGNORED
+patch, IGNORED
+png, IGNORED
+so, IGNORED
+tar, IGNORED
+tgz, IGNORED
+xz, IGNORED
+zip, IGNORED
