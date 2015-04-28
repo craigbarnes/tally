@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <assert.h>
+#include <errno.h>
 #include <locale.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -90,6 +91,9 @@ static char *mmapfile(const char *path, size_t size) {
     assert(size > 0);
     int fd = open(path, O_RDONLY | O_NOFOLLOW);
     if (fd == -1) {
+        if (errno == EACCES) {
+            return NULL;
+        }
         perror("open");
         abort();
     }
@@ -127,6 +131,9 @@ static void count_generic(const char *filename, Language language) {
     LineCount *count = &line_counts[language];
     FILE *stream = fopen(filename, "r");
     if (stream == NULL) {
+        if (errno == EACCES) {
+            return;
+        }
         perror("fopen");
         exit(EXIT_FAILURE);
     }
@@ -149,8 +156,10 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
             ParserFunc parser = lookup_parser(language);
             if (parser) {
                 char *map = mmapfile(f, size);
-                parser(map, size, count_callback, NULL);
-                munmap(map, size);
+                if (map) {
+                    parser(map, size, count_callback, NULL);
+                    munmap(map, size);
+                }
             } else {
                 count_generic(f, language);
             }
