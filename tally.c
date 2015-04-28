@@ -46,8 +46,17 @@ static inline const char *file_extension(const char *filename) {
     return dot + 1;
 }
 
-static Language detect_language(const char *filename, int base) {
-    const char *const basename = filename + base;
+static Language detect_language(const char *path, struct FTW *w, size_t size) {
+    if (size == 0 || access(path, R_OK) != 0) {
+        return IGNORED;
+    }
+
+    const char *const basename = path + w->base;
+
+    if (basename[0] == '.' && w->level > 0) {
+        return IGNORED;
+    }
+
     const char *const ext = file_extension(basename);
     const LanguageHashSlot *slot = NULL;
 
@@ -63,17 +72,11 @@ static Language detect_language(const char *filename, int base) {
 }
 
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
-    (void)s; // Unused
-    const char *basename = f + w->base;
-    const bool ignored = (basename[0] == '.' && w->level > 0);
-
-    if (t == FTW_F && !ignored) {
+    if (t == FTW_F) {
         const char *path = (f[0] == '.' && f[1] == '/') ? f + 2 : f;
-        Language lang = detect_language(f, w->base);
+        Language lang = detect_language(f, w, s->st_size);
         printf("%-20s  %s\n", path, lookup_language_name(lang));
-    }
-
-    if (t == FTW_D && ignored) {
+    } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
         return FTW_SKIP_SUBTREE;
     }
 
@@ -81,27 +84,19 @@ static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
 }
 
 static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
-    const char *basename = f + w->base;
-    const bool ignored = (basename[0] == '.' && w->level > 0);
-
-    if (t == FTW_F && !ignored) {
-        if (access(f, R_OK) != 0) {
-            // TODO: Track number of inaccessible files and show in summary
-            return FTW_CONTINUE;
-        }
-        Language language = detect_language(f, w->base);
+    if (t == FTW_F) {
+        Language language = detect_language(f, w, s->st_size);
         file_counts[language] += 1;
-        size_t size = s->st_size;
-        if (size > 0 && language != IGNORED && language != UNKNOWN) {
+        if (language != IGNORED && language != UNKNOWN) {
             ParserFunc parser = lookup_parser(language);
             parser = parser ? parser : parse_plain;
             LineCount *count = &line_counts[language];
-            LineCount c = parser(f, size);
+            LineCount c = parser(f, s->st_size);
             count->code += c.code;
             count->comment += c.comment;
             count->blank += c.blank;
         }
-    } else if (t == FTW_D && ignored) {
+    } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
         return FTW_SKIP_SUBTREE;
     }
 
