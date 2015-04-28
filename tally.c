@@ -34,8 +34,6 @@
 const LanguageHashSlot *lookup_language_by_extension(const char*, unsigned int);
 const LanguageHashSlot *lookup_language_by_filename(const char*, unsigned int);
 
-typedef unsigned long long int u64;
-typedef struct {u64 code, comment, blank;} LineCount;
 static LineCount line_counts[NUM_LANGUAGES] = {{0ULL, 0ULL, 0ULL}};
 static u64 file_counts[NUM_LANGUAGES] = {0ULL};
 
@@ -106,24 +104,6 @@ static char *mmapfile(const char *path, size_t size) {
     return addr;
 }
 
-static void count_callback(Language language, LineType type, void *ud) {
-    (void)ud;
-    assert(language > IGNORED);
-    assert(language < NUM_LANGUAGES);
-    LineCount *count = &line_counts[language];
-    switch (type) {
-    case CODE:
-        count->code += 1;
-        break;
-    case COMMENT:
-        count->comment += 1;
-        break;
-    case BLANK:
-        count->blank += 1;
-        break;
-    }
-}
-
 static void count_generic(const char *filename, Language language) {
     char *line = NULL;
     size_t len = 0;
@@ -157,7 +137,11 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
             if (parser) {
                 char *map = mmapfile(f, size);
                 if (map) {
-                    parser(map, size, count_callback, NULL);
+                    LineCount *count = &line_counts[language];
+                    LineCount c = parser(map, size);
+                    count->code += c.code;
+                    count->comment += c.comment;
+                    count->blank += c.blank;
                     munmap(map, size);
                 }
             } else {

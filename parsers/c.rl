@@ -1,11 +1,6 @@
-#ifndef OHCOUNT_C_PARSER_H
-#define OHCOUNT_C_PARSER_H
-
 #include "macros.h"
 #include "../languages.h"
 #include "../parse.h"
-
-Language C_LANG = C;
 
 enum {
     C_SPACE = 0,
@@ -23,13 +18,13 @@ enum {
             ls
             break;
         case C_ANY:
-            code
+            zcode
             break;
         case INTERNAL_NL:
-            std_internal_newline(C_LANG)
+            std_internal_newline
             break;
         case NEWLINE:
-            std_newline(C_LANG)
+            std_newline
         }
     }
 
@@ -54,25 +49,25 @@ enum {
     c_comment = c_line_comment | c_block_comment;
 
     c_sq_str =
-        '\'' @code (
+        '\'' @zcode (
             escaped_newline %{ entity = INTERNAL_NL; } %c_ccallback
             |
             ws
             |
-            [^\t '\\] @code
+            [^\t '\\] @zcode
             |
-            '\\' nonnewline @code
+            '\\' nonnewline @zcode
         )* '\'';
 
     c_dq_str =
-        '"' @code (
+        '"' @zcode (
             escaped_newline %{ entity = INTERNAL_NL; } %c_ccallback
             |
             ws
             |
-            [^\t "\\] @code
+            [^\t "\\] @zcode
             |
-            '\\' nonnewline @code
+            '\\' nonnewline @zcode
         )* '"';
 
     c_string = c_sq_str | c_dq_str;
@@ -87,43 +82,11 @@ enum {
 
 }%%
 
-void parse_c(char *buffer, size_t length, ParserCallback callback, void *userdata) {
+LineCount parse_c(char *buffer, size_t length) {
     init
     %% write init;
     cs = c_en_c_line;
     %% write exec;
-    // if no newline at EOF; callback contents of last line
-    process_last_line(C_LANG);
+    process_last_line;
+    return (LineCount){.code = ncode, .comment = ncomment, .blank = nblank};
 }
-
-void parse_cheader(char *buffer, size_t length, ParserCallback callback, void *ud) {
-    C_LANG = CHEADER;
-    parse_c(buffer, length, callback, ud);
-    C_LANG = C;
-}
-
-void parse_cpp(char *buffer, size_t length, ParserCallback callback, void *ud) {
-    C_LANG = CPLUSPLUS;
-    parse_c(buffer, length, callback, ud);
-    C_LANG = C;
-}
-
-void parse_cppheader(char *buffer, size_t length, ParserCallback callback, void *ud) {
-    C_LANG = CPLUSPLUSHEADER;
-    parse_c(buffer, length, callback, ud);
-    C_LANG = C;
-}
-
-void parse_csharp(char *buffer, size_t length, ParserCallback callback, void *ud) {
-    C_LANG = CSHARP;
-    parse_c(buffer, length, callback, ud);
-    C_LANG = C;
-}
-
-void parse_vala(char *buffer, size_t length, ParserCallback callback, void *ud) {
-    C_LANG = VALA;
-    parse_c(buffer, length, callback, ud);
-    C_LANG = C;
-}
-
-#endif

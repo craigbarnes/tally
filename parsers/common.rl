@@ -26,7 +26,7 @@ action ls {
     }
 }
 
-action code {
+action zcode {
     if (!line_contains_code && !line_start) {
         line_start = ts;
     }
