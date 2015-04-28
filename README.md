@@ -10,6 +10,7 @@ Requirements
 * C99 compiler
 * [GNU Make]
 * [GNU gperf]
+* [Ragel]
 
 Installation
 ------------
@@ -34,3 +35,4 @@ Public License version 3 for more details.
 [General Public License version 3]: http://www.gnu.org/licenses/gpl-3.0.html
 [GNU Make]: https://www.gnu.org/software/make/
 [GNU gperf]: https://www.gnu.org/software/gperf/
+[Ragel]: http://www.colm.net/open-source/ragel/
