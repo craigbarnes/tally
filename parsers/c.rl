@@ -82,11 +82,13 @@ enum {
 
 }%%
 
-LineCount parse_c(char *buffer, size_t length) {
+LineCount parse_c(const char *path, size_t length) {
+    char *buffer = mmapfile(path, length);
     init
     %% write init;
     cs = c_en_c_line;
     %% write exec;
     process_last_line;
+    munmap(buffer, length);
     return (LineCount){.code = ncode, .comment = ncomment, .blank = nblank};
 }

@@ -22,11 +22,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <assert.h>
-#include <errno.h>
 #include <locale.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
 #include "languages.h"
 #include "names.h"
 #include "parse.h"
@@ -84,81 +80,26 @@ static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     return FTW_CONTINUE;
 }
 
-static char *mmapfile(const char *path, size_t size) {
-    assert(path);
-    assert(size > 0);
-    int fd = open(path, O_RDONLY | O_NOFOLLOW);
-    if (fd == -1) {
-        if (errno == EACCES) {
-            return NULL;
-        }
-        perror("open");
-        abort();
-    }
-    char *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
-    if (addr == MAP_FAILED) {
-        perror("mmap");
-        abort();
-    }
-    close(fd);
-    return addr;
-}
-
-static void count_generic(const char *filename, Language language) {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    LineCount *count = &line_counts[language];
-    FILE *stream = fopen(filename, "r");
-    if (stream == NULL) {
-        if (errno == EACCES) {
-            return;
-        }
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
-    while ((read = getline(&line, &len, stream)) != -1) {
-        for (ssize_t i = 0; i < read; i++) {
-            switch (line[i]) {
-            case ' ': case '\t': case '\f': case '\v': case '\r':
-                break;
-            case '\n':
-                count->blank += 1;
-                goto nextline;
-            default:
-                count->code += 1;
-                goto nextline;
-            }
-        }
-        nextline:;
-    }
-    free(line);
-    fclose(stream);
-}
-
 static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
     const char *basename = f + w->base;
     const bool ignored = (basename[0] == '.' && w->level > 0);
 
     if (t == FTW_F && !ignored) {
+        if (access(f, R_OK) != 0) {
+            // TODO: Track number of inaccessible files and show in summary
+            return FTW_CONTINUE;
+        }
         Language language = detect_language(f, w->base);
         file_counts[language] += 1;
         size_t size = s->st_size;
         if (size > 0 && language != IGNORED && language != UNKNOWN) {
             ParserFunc parser = lookup_parser(language);
-            if (parser) {
-                char *map = mmapfile(f, size);
-                if (map) {
-                    LineCount *count = &line_counts[language];
-                    LineCount c = parser(map, size);
-                    count->code += c.code;
-                    count->comment += c.comment;
-                    count->blank += c.blank;
-                    munmap(map, size);
-                }
-            } else {
-                count_generic(f, language);
-            }
+            parser = parser ? parser : parse_plain;
+            LineCount *count = &line_counts[language];
+            LineCount c = parser(f, size);
+            count->code += c.code;
+            count->comment += c.comment;
+            count->blank += c.blank;
         }
     } else if (t == FTW_D && ignored) {
         return FTW_SKIP_SUBTREE;
