@@ -72,6 +72,21 @@ static inline FILE *xfopen(const char *path) {
     return stream;
 }
 
+static inline char first_nonspace_char(const char *str, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        char c = str[i];
+        switch (c) {
+        case ' ': case '\t': case '\f': case '\v': case '\r':
+            break;
+        case '\n':
+            return '\0';
+        default:
+            return c;
+        }
+    }
+    return '\0';
+}
+
 LineCount parse_plain(const char *path, size_t size) {
     (void)size;
     FILE *stream = xfopen(path);
@@ -80,19 +95,11 @@ LineCount parse_plain(const char *path, size_t size) {
     size_t len = 0;
     ssize_t read;
     while ((read = getline(&line, &len, stream)) != -1) {
-        for (ssize_t i = 0; i < read; i++) {
-            switch (line[i]) {
-            case ' ': case '\t': case '\f': case '\v': case '\r':
-                break;
-            case '\n':
-                blank += 1;
-                goto nextline;
-            default:
-                code += 1;
-                goto nextline;
-            }
+        if (first_nonspace_char(line, read) == '\0') {
+            blank += 1;
+        } else {
+            code += 1;
         }
-        nextline:;
     }
     free(line);
     fclose(stream);
@@ -107,22 +114,14 @@ LineCount parse_shell(const char *path, size_t size) {
     size_t len = 0;
     ssize_t read;
     while ((read = getline(&line, &len, stream)) != -1) {
-        for (ssize_t i = 0; i < read; i++) {
-            switch (line[i]) {
-            case ' ': case '\t': case '\f': case '\v': case '\r':
-                break;
-            case '\n':
-                blank += 1;
-                goto nextline;
-            case '#':
-                comment += 1;
-                goto nextline;
-            default:
-                code += 1;
-                goto nextline;
-            }
+        char c = first_nonspace_char(line, read);
+        if (c == '\0') {
+            blank += 1;
+        } else if (c == '#') {
+            comment += 1;
+        } else {
+            code += 1;
         }
-        nextline:;
     }
     free(line);
     fclose(stream);
