@@ -9,11 +9,11 @@ static const ParserFunc parsers[NUM_LANGUAGES] = {
     [ADA] = NULL,
     [APPLESCRIPT] = NULL,
     [ASSEMBLY] = NULL,
-    [AWK] = NULL,
+    [AWK] = parse_shell,
     [BATCHFILE] = NULL,
     [C] = parse_c,
     [CHEADER] = parse_c,
-    [COFFEESCRIPT] = NULL,
+    [COFFEESCRIPT] = parse_shell,
     [COMMONLISP] = NULL,
     [CPLUSPLUS] = parse_c,
     [CPLUSPLUSHEADER] = parse_c,
@@ -27,53 +27,58 @@ static const ParserFunc parsers[NUM_LANGUAGES] = {
     [GROOVY] = parse_c,
     [HASKELL] = NULL,
     [HTML] = NULL,
-    [INI] = NULL,
+    [INI] = parse_shell,
     [JAVA] = parse_c,
     [JAVASCRIPT] = parse_c,
     [JSON] = parse_plain,
     [LEX] = NULL,
     [LUA] = NULL,
-    [MAKE] = NULL,
+    [MAKE] = parse_shell,
     [MALLARD] = NULL,
     [MARKDOWN] = parse_plain,
     [MOONSCRIPT] = NULL,
     [OBJECTIVEC] = parse_c,
-    [PERL] = NULL,
+    [PERL] = parse_shell,
     [PHP] = parse_c,
     [PKGCONFIG] = NULL,
     [PROTOBUF] = NULL,
-    [PYTHON] = NULL,
-    [RUBY] = NULL,
+    [PYTHON] = parse_shell,
+    [RUBY] = parse_shell,
     [RUST] = parse_c,
     [SCHEME] = NULL,
     [SCSS] = NULL,
-    [SED] = NULL,
-    [SHELL] = NULL,
+    [SED] = parse_shell,
+    [SHELL] = parse_shell,
     [SQL] = NULL,
-    [TCL] = NULL,
+    [TCL] = parse_shell,
     [TEX] = NULL,
     [VALA] = parse_c,
     [VIML] = NULL,
     [XML] = NULL,
     [YACC] = NULL,
-    [YAML] = NULL,
+    [YAML] = parse_shell,
 };
 
 ParserFunc lookup_parser(Language language) {
     return parsers[language];
 }
 
-LineCount parse_plain(const char *path, size_t size) {
-    (void)size;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    u64 code = 0ULL, blank = 0ULL;
+static inline FILE *xfopen(const char *path) {
     FILE *stream = fopen(path, "r");
     if (stream == NULL) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
+    return stream;
+}
+
+LineCount parse_plain(const char *path, size_t size) {
+    (void)size;
+    FILE *stream = xfopen(path);
+    u64 code = 0ULL, blank = 0ULL;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
     while ((read = getline(&line, &len, stream)) != -1) {
         for (ssize_t i = 0; i < read; i++) {
             switch (line[i]) {
@@ -92,4 +97,34 @@ LineCount parse_plain(const char *path, size_t size) {
     free(line);
     fclose(stream);
     return (LineCount){.code = code, .comment = 0ULL, .blank = blank};
+}
+
+LineCount parse_shell(const char *path, size_t size) {
+    (void)size;
+    FILE *stream = xfopen(path);
+    u64 code = 0ULL, comment = 0ULL, blank = 0ULL;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    while ((read = getline(&line, &len, stream)) != -1) {
+        for (ssize_t i = 0; i < read; i++) {
+            switch (line[i]) {
+            case ' ': case '\t': case '\f': case '\v': case '\r':
+                break;
+            case '\n':
+                blank += 1;
+                goto nextline;
+            case '#':
+                comment += 1;
+                goto nextline;
+            default:
+                code += 1;
+                goto nextline;
+            }
+        }
+        nextline:;
+    }
+    free(line);
+    fclose(stream);
+    return (LineCount){.code = code, .comment = comment, .blank = blank};
 }
