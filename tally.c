@@ -118,7 +118,19 @@ static void count_generic(const char *filename, Language language) {
         exit(EXIT_FAILURE);
     }
     while ((read = getline(&line, &len, stream)) != -1) {
-        count->code += 1;
+        for (ssize_t i = 0; i < read; i++) {
+            switch (line[i]) {
+            case ' ': case '\t': case '\f': case '\v': case '\r':
+                break;
+            case '\n':
+                count->blank += 1;
+                goto nextline;
+            default:
+                count->code += 1;
+                goto nextline;
+            }
+        }
+        nextline:;
     }
     free(line);
     fclose(stream);
