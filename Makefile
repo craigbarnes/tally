@@ -2,6 +2,7 @@ CWARNS = -Wall -Wextra -pedantic -Wno-missing-field-initializers
 CFLAGS = -g -O2 -std=c99 $(CWARNS)
 GPERF  = gperf
 RAGEL  = ragel
+VGRIND = valgrind -q --error-exitcode=1 --leak-check=full
 PREFIX = /usr/local
 BINDIR = $(PREFIX)/bin
 
@@ -26,9 +27,13 @@ install: all
 uninstall:
 	$(RM) $(DESTDIR)$(BINDIR)/tally
 
+check: all
+	$(VGRIND) ./tally > /dev/null
+	$(VGRIND) ./tally -d > /dev/null
+
 clean:
 	$(RM) tally *.o parsers/*.o
 
 
-.PHONY: all clean
+.PHONY: all install uninstall check clean
 .DELETE_ON_ERROR:
