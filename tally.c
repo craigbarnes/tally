@@ -73,9 +73,9 @@ static Language detect_language(const char *path, struct FTW *w, size_t size) {
 
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
-        const char *path = (f[0] == '.' && f[1] == '/') ? f + 2 : f;
         Language lang = detect_language(f, w, s->st_size);
-        printf("%-20s  %s\n", path, lookup_language_name(lang));
+        bool dotslash = f[0] == '.' && f[1] == '/';
+        printf("%-20s  %s\n", dotslash? f+2 : f, lookup_language_name(lang));
     } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
         return FTW_SKIP_SUBTREE;
     }
