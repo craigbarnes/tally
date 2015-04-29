@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "languages.h"
 
-static const ParserFunc parsers[NUM_LANGUAGES] = {
+static const Parser parsers[NUM_LANGUAGES] = {
     [ADA] = NULL,
     [APPLESCRIPT] = NULL,
     [ASSEMBLY] = NULL,
@@ -115,8 +115,8 @@ static const char *const language_names[NUM_LANGUAGES] = {
     [YAML] = "YAML"
 };
 
-inline ParserFunc lookup_language_parser(Language language) {
-    ParserFunc parser = parsers[language];
+inline Parser lookup_language_parser(Language language) {
+    Parser parser = parsers[language];
     return parser ? parser : parse_plain;
 }
 
