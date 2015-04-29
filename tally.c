@@ -18,7 +18,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <assert.h>
@@ -33,42 +32,9 @@ static const char *fmt_totals = "\033[1m%-15s %'10u %'10u %'10u %'10u\033[0m\n";
 static const char *fmt_row = "%-15s %'10llu %'10llu %'10llu %'10llu\n";
 static const char *fmt_dimrow = "\033[2m%-15s %'10llu\033[0m\n";
 
-static inline const char *file_extension(const char *filename) {
-    const char *dot = strrchr(filename, '.');
-    if(!dot || dot == filename) {
-        return NULL;
-    }
-    return dot + 1;
-}
-
-static Language detect_language(const char *path, struct FTW *w, size_t size) {
-    if (size == 0 || access(path, R_OK) != 0) {
-        return IGNORED;
-    }
-
-    const char *const basename = path + w->base;
-
-    if (basename[0] == '.' && w->level > 0) {
-        return IGNORED;
-    }
-
-    const char *const ext = file_extension(basename);
-    const LanguageHashSlot *slot = NULL;
-
-    if (ext && (slot = lookup_language_by_extension(ext, strlen(ext)))) {
-        return slot->language;
-    }
-
-    if ((slot = lookup_language_by_filename(basename, strlen(basename)))) {
-        return slot->language;
-    }
-
-    return UNKNOWN;
-}
-
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
-        Language lang = detect_language(f, w, s->st_size);
+        Language lang = detect_language(f, w->base, w->level, s->st_size);
         bool dotslash = f[0] == '.' && f[1] == '/';
         printf("%-20s  %s\n", dotslash? f+2 : f, lookup_language_name(lang));
     } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
@@ -80,7 +46,7 @@ static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
 
 static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
-        Language language = detect_language(f, w, s->st_size);
+        Language language = detect_language(f, w->base, w->level, s->st_size);
         file_counts[language] += 1;
         if (language != IGNORED && language != UNKNOWN) {
             ParserFunc parser = lookup_language_parser(language);
