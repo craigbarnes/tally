@@ -10,6 +10,7 @@ typedef enum {
     BATCHFILE,
     C,
     CHEADER,
+    CMAKE,
     COFFEESCRIPT,
     COMMONLISP,
     CPLUSPLUS,

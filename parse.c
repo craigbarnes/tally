@@ -13,6 +13,7 @@ static const ParserFunc parsers[NUM_LANGUAGES] = {
     [BATCHFILE] = NULL,
     [C] = parse_c,
     [CHEADER] = parse_c,
+    [CMAKE] = parse_shell,
     [COFFEESCRIPT] = parse_shell,
     [COMMONLISP] = NULL,
     [CPLUSPLUS] = parse_c,

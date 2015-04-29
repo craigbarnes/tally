@@ -13,6 +13,7 @@ static const char *const language_names[NUM_LANGUAGES] = {
     [BATCHFILE] = "Batchfile",
     [C] = "C",
     [CHEADER] = "C Header",
+    [CMAKE] = "CMake",
     [COFFEESCRIPT] = "CoffeeScript",
     [COMMONLISP] = "Common Lisp",
     [CPLUSPLUS] = "C++",

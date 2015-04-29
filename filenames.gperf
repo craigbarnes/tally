@@ -11,6 +11,7 @@
 LanguageHashSlot;
 
 %%
+CMakeLists.txt, CMAKE
 Makefile, MAKE
 makefile, MAKE
 GNUmakefile, MAKE
