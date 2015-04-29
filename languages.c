@@ -1,7 +1,60 @@
-#pragma once
-#include <stdio.h>
 #include <stdlib.h>
 #include "languages.h"
+
+static const ParserFunc parsers[NUM_LANGUAGES] = {
+    [ADA] = NULL,
+    [APPLESCRIPT] = NULL,
+    [ASSEMBLY] = NULL,
+    [AWK] = parse_shell,
+    [BATCHFILE] = NULL,
+    [C] = parse_c,
+    [CHEADER] = parse_c,
+    [CMAKE] = parse_shell,
+    [COFFEESCRIPT] = parse_shell,
+    [COMMONLISP] = NULL,
+    [CPLUSPLUS] = parse_c,
+    [CPLUSPLUSHEADER] = parse_c,
+    [CSHARP] = parse_c,
+    [CSS] = NULL,
+    [D] = parse_c,
+    [DART] = parse_c,
+    [EMACSLISP] = NULL,
+    [GO] = parse_c,
+    [GPERF] = NULL,
+    [GROOVY] = parse_c,
+    [HASKELL] = NULL,
+    [HTML] = NULL,
+    [INI] = parse_shell,
+    [JAVA] = parse_c,
+    [JAVASCRIPT] = parse_c,
+    [JSON] = parse_plain,
+    [LEX] = NULL,
+    [LUA] = NULL,
+    [MAKE] = parse_shell,
+    [MALLARD] = NULL,
+    [MARKDOWN] = parse_plain,
+    [MOONSCRIPT] = NULL,
+    [OBJECTIVEC] = parse_c,
+    [PERL] = parse_shell,
+    [PHP] = parse_c,
+    [PKGCONFIG] = NULL,
+    [PROTOBUF] = NULL,
+    [PYTHON] = parse_shell,
+    [RUBY] = parse_shell,
+    [RUST] = parse_c,
+    [SCHEME] = NULL,
+    [SCSS] = NULL,
+    [SED] = parse_shell,
+    [SHELL] = parse_shell,
+    [SQL] = NULL,
+    [TCL] = parse_shell,
+    [TEX] = NULL,
+    [VALA] = parse_c,
+    [VIML] = NULL,
+    [XML] = NULL,
+    [YACC] = NULL,
+    [YAML] = parse_shell,
+};
 
 static const char *const language_names[NUM_LANGUAGES] = {
     [UNKNOWN] = "?",
@@ -60,9 +113,12 @@ static const char *const language_names[NUM_LANGUAGES] = {
     [YAML] = "YAML"
 };
 
-static inline const char *lookup_language_name(Language lang) {
-    assert(lang >= 0);
-    assert(lang < NUM_LANGUAGES);
+inline ParserFunc lookup_language_parser(Language language) {
+    ParserFunc parser = parsers[language];
+    return parser ? parser : parse_plain;
+}
+
+inline const char *lookup_language_name(Language lang) {
     const char *name = language_names[lang];
     if (!name) {
         fprintf(stderr, "Error: language_names[%d] is missing\n", lang);

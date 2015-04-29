@@ -1,4 +1,5 @@
 #pragma once
+#include "parse.h"
 
 typedef enum {
     UNKNOWN = 0,
@@ -62,3 +63,8 @@ typedef struct {
     const char *key;
     Language language;
 } LanguageHashSlot;
+
+const LanguageHashSlot *lookup_language_by_extension(const char*, unsigned int);
+const LanguageHashSlot *lookup_language_by_filename(const char*, unsigned int);
+const char *lookup_language_name(Language lang);
+ParserFunc lookup_language_parser(Language);

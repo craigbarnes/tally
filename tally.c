@@ -24,11 +24,6 @@
 #include <assert.h>
 #include <locale.h>
 #include "languages.h"
-#include "names.h"
-#include "parse.h"
-
-const LanguageHashSlot *lookup_language_by_extension(const char*, unsigned int);
-const LanguageHashSlot *lookup_language_by_filename(const char*, unsigned int);
 
 static LineCount line_counts[NUM_LANGUAGES] = {{0ULL, 0ULL, 0ULL}};
 static u64 file_counts[NUM_LANGUAGES] = {0ULL};
@@ -88,10 +83,9 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
         Language language = detect_language(f, w, s->st_size);
         file_counts[language] += 1;
         if (language != IGNORED && language != UNKNOWN) {
-            ParserFunc parser = lookup_parser(language);
-            parser = parser ? parser : parse_plain;
-            LineCount *count = &line_counts[language];
+            ParserFunc parser = lookup_language_parser(language);
             LineCount c = parser(f, s->st_size);
+            LineCount *count = &line_counts[language];
             count->code += c.code;
             count->comment += c.comment;
             count->blank += c.blank;
