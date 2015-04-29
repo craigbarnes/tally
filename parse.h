@@ -10,3 +10,6 @@ ParserFunc lookup_parser(Language);
 LineCount parse_c(const char*, size_t);
 LineCount parse_plain(const char*, size_t);
 LineCount parse_shell(const char*, size_t);
+
+FILE *xfopen(const char *path);
+char first_nonspace_char(const char *str, size_t len);

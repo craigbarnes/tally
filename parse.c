@@ -64,7 +64,7 @@ ParserFunc lookup_parser(Language language) {
     return parsers[language];
 }
 
-static inline FILE *xfopen(const char *path) {
+inline FILE *xfopen(const char *path) {
     FILE *stream = fopen(path, "r");
     if (stream == NULL) {
         perror("fopen");
@@ -73,7 +73,7 @@ static inline FILE *xfopen(const char *path) {
     return stream;
 }
 
-static inline char first_nonspace_char(const char *str, size_t len) {
+inline char first_nonspace_char(const char *str, size_t len) {
     for (size_t i = 0; i < len; i++) {
         char c = str[i];
         switch (c) {
@@ -86,45 +86,4 @@ static inline char first_nonspace_char(const char *str, size_t len) {
         }
     }
     return '\0';
-}
-
-LineCount parse_plain(const char *path, size_t size) {
-    (void)size;
-    FILE *stream = xfopen(path);
-    u64 code = 0ULL, blank = 0ULL;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    while ((read = getline(&line, &len, stream)) != -1) {
-        if (first_nonspace_char(line, read) == '\0') {
-            blank += 1;
-        } else {
-            code += 1;
-        }
-    }
-    free(line);
-    fclose(stream);
-    return (LineCount){.code = code, .comment = 0ULL, .blank = blank};
-}
-
-LineCount parse_shell(const char *path, size_t size) {
-    (void)size;
-    FILE *stream = xfopen(path);
-    u64 code = 0ULL, comment = 0ULL, blank = 0ULL;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    while ((read = getline(&line, &len, stream)) != -1) {
-        char c = first_nonspace_char(line, read);
-        if (c == '\0') {
-            blank += 1;
-        } else if (c == '#') {
-            comment += 1;
-        } else {
-            code += 1;
-        }
-    }
-    free(line);
-    fclose(stream);
-    return (LineCount){.code = code, .comment = comment, .blank = blank};
 }
