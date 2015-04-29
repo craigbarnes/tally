@@ -21,3 +21,7 @@ gvimrc, VIML
 .gvimrc, VIML
 emacs, EMACSLISP
 .emacs, EMACSLISP
+Rakefile, RUBY
+rakefile, RUBY
+Gemfile, RUBY
+Vagrantfile, RUBY
