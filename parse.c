@@ -1,5 +1,27 @@
 #include <stdlib.h>
+#include <unistd.h>
+#include <assert.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 #include "parse.h"
+
+inline char *mmapfile(const char *path, size_t size) {
+    assert(path);
+    assert(size > 0);
+    int fd = open(path, O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        abort();
+    }
+    char *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (addr == MAP_FAILED) {
+        perror("mmap");
+        abort();
+    }
+    close(fd);
+    return addr;
+}
 
 inline FILE *xfopen(const char *path) {
     FILE *stream = fopen(path, "r");

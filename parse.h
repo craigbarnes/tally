@@ -9,5 +9,6 @@ LineCount parse_c(const char*, size_t);
 LineCount parse_plain(const char*, size_t);
 LineCount parse_shell(const char*, size_t);
 
+char *mmapfile(const char *path, size_t size);
 FILE *xfopen(const char *path);
 char first_nonspace_char(const char *str, size_t len);
