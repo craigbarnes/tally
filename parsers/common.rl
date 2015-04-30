@@ -26,7 +26,7 @@ action ls {
     }
 }
 
-action zcode {
+action code {
     if (!line_contains_code && !line_start) {
         line_start = ts;
     }
@@ -40,6 +40,36 @@ action comment {
             line_start = ts;
         }
     }
+}
+
+action std_internal_newline {
+    if (p > line_start) {
+        if (line_contains_code) {
+            ncode++;
+        } else if (whole_line_comment) {
+            ncomment++;
+        } else {
+            nblank++;
+        }
+    }
+    whole_line_comment = false;
+    line_contains_code = false;
+    line_start = p;
+}
+
+action std_newline {
+    if (te > line_start) {
+        if (line_contains_code) {
+            ncode++;
+        } else if (whole_line_comment) {
+            ncomment++;
+        } else {
+            nblank++;
+        }
+    }
+    whole_line_comment = false;
+    line_contains_code = false;
+    line_start = 0;
 }
 
 }%%

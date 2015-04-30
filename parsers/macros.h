@@ -1,50 +1,6 @@
 #pragma once
 #include <stdbool.h>
 
-#define NEWLINE -1
-#define INTERNAL_NL -2
-
-#define ls { \
-    if (!line_start) \
-        line_start = ts; \
-}
-
-#define zcode { \
-    if (!line_contains_code && !line_start) \
-        line_start = ts; \
-    line_contains_code = true; \
-}
-
-#define std_internal_newline { \
-    if (p > line_start) { \
-        if (line_contains_code) { \
-            ncode++; \
-        } else if (whole_line_comment) { \
-            ncomment++; \
-        } else { \
-            nblank++; \
-        } \
-    } \
-    whole_line_comment = false; \
-    line_contains_code = false; \
-    line_start = p; \
-}
-
-#define std_newline { \
-    if (te > line_start) { \
-        if (line_contains_code) {\
-            ncode++; \
-        } else if (whole_line_comment) { \
-            ncomment++; \
-        } else { \
-            nblank++; \
-        } \
-    } \
-    whole_line_comment = false; \
-    line_contains_code = false; \
-    line_start = 0; \
-}
-
 #define process_last_line {\
     if (line_contains_code) { \
         ncode++; \
