@@ -1,13 +1,7 @@
 #pragma once
 #include <stdbool.h>
-
-#define process_last_line {\
-    if (line_contains_code) { \
-        ncode++; \
-    } else if (whole_line_comment) { \
-        ncomment++; \
-    } \
-}
+#include <sys/mman.h>
+#include "../parse.h"
 
 int cs;
 int act;
@@ -20,25 +14,37 @@ int stack[5];
 int top;
 
 char *buffer_start; // The buffer currently being parsed
+size_t buffer_size; // The size of the current buffer
 char *line_start; // The beginning of the current line in the buffer
-int entity; // State variable for the current entity being matched
 bool whole_line_comment;
 bool line_contains_code;
 
-unsigned long long int ncode, ncomment, nblank;
+u64 ncode;
+u64 ncomment;
+u64 nblank;
 
-#define init { \
-    p = buffer; \
-    pe = buffer + length; \
-    eof = pe; \
-    \
-    buffer_start = buffer; \
-    whole_line_comment = false; \
-    line_contains_code = false; \
-    line_start = 0; \
-    entity = 0; \
-    \
-    ncode = 0ULL; \
-    ncomment = 0ULL; \
-    nblank = 0ULL; \
+static inline void init(const char *path, size_t size) {
+    buffer_size = size;
+    buffer_start = mmapfile(path, size);
+    p = buffer_start;
+    pe = buffer_start + size;
+    eof = pe;
+    line_start = NULL;
+    whole_line_comment = false;
+    line_contains_code = false;
+    ncode = 0ULL;
+    ncomment = 0ULL;
+    nblank = 0ULL;
+}
+
+static inline void deinit() {
+    munmap(buffer_start, buffer_size);
+}
+
+static inline void process_last_line() {
+    if (line_contains_code) {
+        ncode++;
+    } else if (whole_line_comment) {
+        ncomment++;
+    }
 }

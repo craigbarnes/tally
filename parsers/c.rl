@@ -1,7 +1,4 @@
-#include <sys/mman.h>
 #include "macros.h"
-#include "../languages.h"
-#include "../parse.h"
 
 %%{
     machine c;
@@ -62,13 +59,12 @@
 
 }%%
 
-LineCount parse_c(const char *path, size_t length) {
-    char *buffer = mmapfile(path, length);
-    init
+LineCount parse_c(const char *path, size_t size) {
+    init(path, size);
     %% write init;
     cs = c_en_c_line;
     %% write exec;
-    process_last_line;
-    munmap(buffer, length);
+    process_last_line();
+    deinit();
     return (LineCount){.code = ncode, .comment = ncomment, .blank = nblank};
 }
