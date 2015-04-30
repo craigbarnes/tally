@@ -6,11 +6,14 @@ A simple command-line SLOC counter.
 Requirements
 ------------
 
-* POSIX OS
 * C99 compiler
 * [GNU Make]
 * [GNU gperf]
 * [Ragel]
+
+**Note:** Tally currently only works with GNU libc. This is only for
+convenience during early development. The intention is to eventually be
+portable to any [POSIX.1-2008] compliant OS.
 
 Installation
 ------------
@@ -36,3 +39,4 @@ Public License version 3 for more details.
 [GNU Make]: https://www.gnu.org/software/make/
 [GNU gperf]: https://www.gnu.org/software/gperf/
 [Ragel]: http://www.colm.net/open-source/ragel/
+[POSIX.1-2008]: http://pubs.opengroup.org/onlinepubs/9699919799/
