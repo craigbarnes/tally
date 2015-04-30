@@ -1,4 +1,4 @@
-#include "macros.h"
+#include "prelude.h"
 
 %%{
     machine c;

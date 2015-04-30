@@ -15,7 +15,7 @@ tally.o: languages.h parse.h
 languages.o: languages.h parse.h
 parse.o: parse.h
 extensions.o filenames.o: languages.h
-parsers/c.o: languages.h parse.h parsers/macros.h parsers/common.rl
+parsers/c.o: languages.h parse.h parsers/prelude.h parsers/common.rl
 parsers/plain.o parsers/shell.o: languages.h parse.h
 
 %.c: %.gperf

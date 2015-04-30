@@ -24,8 +24,8 @@ u64 ncomment;
 u64 nblank;
 
 static inline void init(const char *path, size_t size) {
-    buffer_size = size;
     buffer_start = mmapfile(path, size);
+    buffer_size = size;
     p = buffer_start;
     pe = buffer_start + size;
     eof = pe;
