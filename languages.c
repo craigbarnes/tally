@@ -124,7 +124,7 @@ inline const char *lookup_language_name(Language lang) {
     const char *name = language_names[lang];
     if (!name) {
         fprintf(stderr, "Error: language_names[%d] is missing\n", lang);
-        abort();
+        exit(EXIT_FAILURE);
     }
     return name;
 }

@@ -12,12 +12,12 @@ inline char *mmapfile(const char *path, size_t size) {
     int fd = open(path, O_RDONLY);
     if (fd == -1) {
         perror("open");
-        abort();
+        exit(EXIT_FAILURE);
     }
     char *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (addr == MAP_FAILED) {
         perror("mmap");
-        abort();
+        exit(EXIT_FAILURE);
     }
     close(fd);
     return addr;
