@@ -25,6 +25,7 @@ c, C
 cc, CPLUSPLUS
 C, CPLUSPLUS
 cl, COMMONLISP
+clj, CLOJURE
 cls, TEX
 cmake, CMAKE
 cmd, BATCHFILE
@@ -78,6 +79,9 @@ pm, PERL
 proto, PROTOBUF
 py, PYTHON
 rb, RUBY
+rktd, RACKET
+rktl, RACKET
+rkt, RACKET
 rs, RUST
 S, ASSEMBLY
 scm, SCHEME
