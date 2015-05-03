@@ -7,7 +7,7 @@ VGRIND = valgrind -q --error-exitcode=1 --leak-check=full
 PREFIX = /usr/local
 BINDIR = $(PREFIX)/bin
 
-PARSERS= $(addprefix parsers/, c.o plain.o shell.o)
+PARSERS= $(addprefix parsers/, c.o plain.o shell.o sql.o)
 
 tally: tally.o languages.o parse.o extensions.o filenames.o $(PARSERS)
 tally.o: languages.h parse.h
@@ -15,6 +15,7 @@ languages.o: languages.h parse.h
 parse.o: parse.h
 extensions.o filenames.o: languages.h
 parsers/c.o: languages.h parse.h parsers/prelude.h parsers/common.rl
+parsers/sql.o: languages.h parse.h parsers/prelude.h parsers/common.rl
 parsers/plain.o parsers/shell.o: languages.h parse.h
 
 %.c: %.gperf
