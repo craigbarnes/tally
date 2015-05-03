@@ -27,11 +27,6 @@
 static LineCount line_counts[NUM_LANGUAGES] = {{0ULL, 0ULL, 0ULL}};
 static u64 file_counts[NUM_LANGUAGES] = {0ULL};
 
-static const char *fmt_header = "\033[1m%-15s %10s %10s %10s %10s\033[0m\n";
-static const char *fmt_totals = "\033[1m%-15s %'10u %'10u %'10u %'10u\033[0m\n";
-static const char *fmt_row = "%-15s %'10llu %'10llu %'10llu %'10llu\n";
-static const char *fmt_dimrow = "\033[2m%-15s %'10llu\033[0m\n";
-
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
@@ -122,17 +117,33 @@ int main(int argc, char *argv[]) {
         Language index[NUM_LANGUAGES];
         unsigned int n = 0U;
         u64 tfiles = 0ULL, tcode = 0ULL, tcomment = 0ULL, tblank = 0ULL;
+
         for (Language lang = 2; lang < NUM_LANGUAGES; lang++) {
             if (file_counts[lang] > 0ULL) {
                 index[n++] = lang;
                 tfiles += file_counts[lang];
             }
         }
+
         if (n == 0) {
             puts("Nothing found");
             exit(EXIT_SUCCESS);
         }
+
+        const char *fmt_header, *fmt_totals, *fmt_dimrow;
+        const char *fmt_row = "%-15s %'10llu %'10llu %'10llu %'10llu\n";
+        if (isatty(fileno(stdout))) {
+            fmt_header = "\033[1m%-15s %10s %10s %10s %10s\033[0m\n";
+            fmt_totals = "\033[1m%-15s %'10u %'10u %'10u %'10u\033[0m\n";
+            fmt_dimrow = "\033[2m%-15s %'10llu\033[0m\n";
+        } else {
+            fmt_header = "%-15s %10s %10s %10s %10s\n";
+            fmt_totals = "%-15s %'10u %'10u %'10u %'10u\n";
+            fmt_dimrow = "%-15s %'10llu\n";
+        }
+
         printf(fmt_header, "Language", "Files", "Code", "Comment", "Blank");
+
         if (n == 1) {
             Language lang = index[0];
             const char *name = lookup_language_name(lang);
@@ -141,6 +152,7 @@ int main(int argc, char *argv[]) {
             printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
             exit(EXIT_SUCCESS);
         }
+
         qsort(index, n, sizeof(Language), compare);
         for (unsigned int i = 0U; i < n; i++) {
             Language lang = index[i];
@@ -152,6 +164,7 @@ int main(int argc, char *argv[]) {
             tcomment += c->comment;
             tblank += c->blank;
         }
+
         printf(fmt_totals, "Total:", tfiles, tcode, tcomment, tblank);
         if (file_counts[UNKNOWN] > 0ULL) {
             printf(fmt_dimrow, "Unrecognized", file_counts[UNKNOWN]);
