@@ -6,6 +6,7 @@ typedef struct {u64 code, comment, blank;} LineCount;
 typedef LineCount (*Parser)(const char*, size_t);
 
 LineCount parse_c(const char*, size_t);
+LineCount parse_css(const char*, size_t);
 LineCount parse_plain(const char*, size_t);
 LineCount parse_python(const char*, size_t);
 LineCount parse_shell(const char*, size_t);

@@ -7,7 +7,7 @@ VGRIND = valgrind -q --error-exitcode=1 --leak-check=full
 PREFIX = /usr/local
 BINDIR = $(PREFIX)/bin
 
-RL_LANGS   = c python sql xml
+RL_LANGS   = c css python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
 PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
 
