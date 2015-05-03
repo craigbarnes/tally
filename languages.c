@@ -33,7 +33,7 @@ static const Parser parsers[NUM_LANGUAGES] = {
     [LEX] = NULL,
     [LUA] = NULL,
     [MAKE] = parse_shell,
-    [MALLARD] = NULL,
+    [MALLARD] = parse_xml,
     [MARKDOWN] = parse_plain,
     [MOONSCRIPT] = NULL,
     [OBJECTIVEC] = parse_c,
@@ -53,7 +53,7 @@ static const Parser parsers[NUM_LANGUAGES] = {
     [TEX] = NULL,
     [VALA] = parse_c,
     [VIML] = NULL,
-    [XML] = NULL,
+    [XML] = parse_xml,
     [YACC] = NULL,
     [YAML] = parse_shell,
 };
