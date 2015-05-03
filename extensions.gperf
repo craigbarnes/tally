@@ -66,6 +66,7 @@ markdown, MARKDOWN
 mawk, AWK
 md, MARKDOWN
 mkd, MARKDOWN
+mkdn, MARKDOWN
 mk, MAKE
 m, OBJECTIVEC
 moon, MOONSCRIPT
@@ -82,6 +83,7 @@ rb, RUBY
 rktd, RACKET
 rktl, RACKET
 rkt, RACKET
+rockspec, LUA
 rs, RUST
 S, ASSEMBLY
 scm, SCHEME

@@ -11,7 +11,15 @@
 LanguageHashSlot;
 
 %%
+.bashrc, SHELL
+.bash_profile, SHELL
+.bash_logout, SHELL
+bashrc, SHELL
+bash_profile, SHELL
+bash_logout, SHELL
 CMakeLists.txt, CMAKE
+.luacheckrc, LUA
+.luacov, LUA
 Makefile, MAKE
 makefile, MAKE
 GNUmakefile, MAKE
