@@ -53,6 +53,7 @@ typedef enum {
     SQL,
     TCL,
     TEX,
+    TOML,
     VALA,
     VIML,
     XML,

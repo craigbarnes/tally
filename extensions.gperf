@@ -98,6 +98,7 @@ ss, SCHEME
 sty, TEX
 tcl, TCL
 tex, TEX
+toml, TOML
 vala, VALA
 vim, VIML
 xhtml, HTML
