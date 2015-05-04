@@ -9,6 +9,7 @@ LineCount parse_c(const char*, size_t);
 LineCount parse_css(const char*, size_t);
 LineCount parse_html(const char*, size_t);
 LineCount parse_lisp(const char*, size_t);
+LineCount parse_lua(const char*, size_t);
 LineCount parse_plain(const char*, size_t);
 LineCount parse_python(const char*, size_t);
 LineCount parse_shell(const char*, size_t);
