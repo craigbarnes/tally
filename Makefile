@@ -6,6 +6,7 @@ CTAGS  = ctags
 VGRIND = valgrind -q --error-exitcode=1 --leak-check=full
 PREFIX = /usr/local
 BINDIR = $(PREFIX)/bin
+MANDIR = $(PREFIX)/share/man
 
 RL_LANGS   = c css html lisp lua python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
@@ -28,13 +29,15 @@ parsers/%.c: parsers/%.rl
 tags: tally.c parse.[ch] languages.[ch]
 	$(CTAGS) -f $@ $^
 
-install: tally | $(DESTDIR)$(BINDIR)/
+install: tally | $(DESTDIR)$(BINDIR)/ $(DESTDIR)$(MANDIR)/man1/
 	install -p -m 0755 tally '$(DESTDIR)$(BINDIR)/tally'
+	install -p -m 0644 tally.1 '$(DESTDIR)$(MANDIR)/man1/tally.1'
 
 uninstall:
 	$(RM) '$(DESTDIR)$(BINDIR)/tally'
+	$(RM) '$(DESTDIR)$(MANDIR)/man1/tally.1'
 
-$(DESTDIR)$(BINDIR)/:
+$(DESTDIR)$(BINDIR)/ $(DESTDIR)$(MANDIR)/man1/:
 	mkdir -p '$@'
 
 check: tally
