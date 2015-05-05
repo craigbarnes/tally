@@ -72,10 +72,19 @@ int compare(const void *p1, const void *p2) {
 }
 
 int main(int argc, char *argv[]) {
+    const char *const optstring = "sdh";
+    const char *const help =
+        "Usage: tally [OPTION] [PATH]...\n\n"
+        "Options:\n\n"
+        "   -s   Show line counts per language (default)\n"
+        "   -d   Show detected file types\n"
+        "   -h   Show usage information\n"
+    ;
+
     int (*cb)(const char*, const struct stat*, int, struct FTW*) = summary;
     setlocale(LC_ALL, "");
 
-    for (int opt; (opt = getopt(argc, argv, "ds")) != -1; ) {
+    for (int opt; (opt = getopt(argc, argv, optstring)) != -1; ) {
         switch (opt) {
         case 'd':
             cb = detect;
@@ -83,6 +92,9 @@ int main(int argc, char *argv[]) {
         case 's':
             cb = summary;
             break;
+        case 'h':
+            puts(help);
+            exit(EXIT_SUCCESS);
         case '?':
             exit(EXIT_FAILURE);
         default:
