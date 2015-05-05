@@ -29,11 +29,11 @@ tags: tally.c parse.[ch] languages.[ch]
 	$(CTAGS) -f $@ $^
 
 install: tally
-	mkdir -p $(DESTDIR)$(BINDIR)
-	install -p -m 0755 tally $(DESTDIR)$(BINDIR)/tally
+	mkdir -p '$(DESTDIR)$(BINDIR)'
+	install -p -m 0755 tally '$(DESTDIR)$(BINDIR)/tally'
 
 uninstall:
-	$(RM) $(DESTDIR)$(BINDIR)/tally
+	$(RM) '$(DESTDIR)$(BINDIR)/tally'
 
 check: tally
 	$(VGRIND) ./tally > /dev/null
