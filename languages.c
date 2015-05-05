@@ -121,12 +121,12 @@ static const char *const language_names[NUM_LANGUAGES] = {
     [YAML] = "YAML"
 };
 
-inline Parser lookup_language_parser(Language language) {
+Parser lookup_language_parser(Language language) {
     Parser parser = parsers[language];
     return parser ? parser : parse_plain;
 }
 
-inline const char *lookup_language_name(Language lang) {
+const char *lookup_language_name(Language lang) {
     const char *name = language_names[lang];
     if (!name) {
         fprintf(stderr, "Error: language_names[%d] is missing\n", lang);

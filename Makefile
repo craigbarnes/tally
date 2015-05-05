@@ -1,4 +1,4 @@
-CWARNS = -Wall -Wextra -pedantic -Wno-missing-field-initializers
+CWARNS = -Wall -Wextra -pedantic
 CFLAGS = -g -O2 -std=c99 $(CWARNS)
 GPERF  = gperf
 RAGEL  = ragel
@@ -19,6 +19,10 @@ parse.o: parse.h
 extensions.o filenames.o: languages.h
 parsers/plain.o parsers/shell.o: languages.h parse.h
 $(RL_PARSERS): languages.h parse.h parsers/prelude.h parsers/common.rl
+
+$(RL_PARSERS): CWARNS += -Wno-unused-const-variable
+extensions.o filenames.o: CWARNS += -Wno-missing-field-initializers
+extensions.o filenames.o: CWARNS += -Wno-static-in-inline
 
 %.c: %.gperf
 	$(GPERF) -L ANSI-C $< > $@
