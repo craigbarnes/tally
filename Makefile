@@ -28,12 +28,14 @@ parsers/%.c: parsers/%.rl
 tags: tally.c parse.[ch] languages.[ch]
 	$(CTAGS) -f $@ $^
 
-install: tally
-	mkdir -p '$(DESTDIR)$(BINDIR)'
+install: tally | $(DESTDIR)$(BINDIR)/
 	install -p -m 0755 tally '$(DESTDIR)$(BINDIR)/tally'
 
 uninstall:
 	$(RM) '$(DESTDIR)$(BINDIR)/tally'
+
+$(DESTDIR)$(BINDIR)/:
+	mkdir -p '$@'
 
 check: tally
 	$(VGRIND) ./tally > /dev/null
