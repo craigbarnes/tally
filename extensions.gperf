@@ -40,7 +40,11 @@ d, D
 desktop, INI
 el, EMACSLISP
 emacs, EMACSLISP
+frag, GLSL
 gawk, AWK
+glsl, GLSL
+glslf, GLSL
+glslv, GLSL
 go, GO
 gperf, GPERF
 groovy, GROOVY
@@ -100,6 +104,7 @@ tcl, TCL
 tex, TEX
 toml, TOML
 vala, VALA
+vert, GLSL
 vim, VIML
 xhtml, HTML
 xml, XML

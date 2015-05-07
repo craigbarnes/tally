@@ -22,6 +22,7 @@ typedef enum {
     D,
     DART,
     EMACSLISP,
+    GLSL,
     GO,
     GPERF,
     GROOVY,
