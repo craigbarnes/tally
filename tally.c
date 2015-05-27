@@ -59,6 +59,22 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
     return FTW_CONTINUE;
 }
 
+static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
+    if (t == FTW_F) {
+        Language language = detect_language(f, w->base, w->level, s->st_size);
+        if (language != IGNORED && language != UNKNOWN) {
+            const char *name = lookup_language_name(language);
+            Parser parser = lookup_language_parser(language);
+            LineCount c = parser(f, s->st_size);
+            printf("%'8llu  %-12s %s\n", c.code, name, f);
+        }
+    } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
+        return FTW_SKIP_SUBTREE;
+    }
+
+    return FTW_CONTINUE;
+}
+
 int compare(const void *p1, const void *p2) {
     const Language l1 = *(const Language*)p1, l2 = *(const Language*)p2;
     const u64 c1 = (&line_counts[l1])->code, c2 = (&line_counts[l2])->code;
@@ -72,7 +88,7 @@ int compare(const void *p1, const void *p2) {
 }
 
 int main(int argc, char *argv[]) {
-    const char *const optstring = "sdh";
+    const char *const optstring = "sidh";
     const char *const help =
         "Usage: tally [OPTION] [PATH]...\n\n"
         "Options:\n\n"
@@ -91,6 +107,14 @@ int main(int argc, char *argv[]) {
             break;
         case 's':
             cb = summary;
+            break;
+        case 'i':
+            if (isatty(fileno(stdout))) {
+                printf("\033[1m%8s  %-12s File\033[0m\n", "SLOC", "Language");
+            } else {
+                printf("%8s  %-12s File\n", "SLOC", "Language");
+            }
+            cb = perfile;
             break;
         case 'h':
             puts(help);
