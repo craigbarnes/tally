@@ -1,4 +1,4 @@
-CWARNS = -Wall -Wextra -pedantic
+CWARNS = -Wall -Wextra
 CFLAGS = -g -O2 -std=c99 $(CWARNS)
 GPERF  = gperf
 RAGEL  = ragel
