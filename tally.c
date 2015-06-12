@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
         "Usage: tally [OPTION] [PATH]...\n\n"
         "Options:\n\n"
         "   -s   Show line counts per language (default)\n"
+        "   -i   Show line counts per file\n"
         "   -d   Show detected file types\n"
         "   -h   Show usage information\n"
     ;
