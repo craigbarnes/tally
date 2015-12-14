@@ -1,12 +1,12 @@
-CWARNS = -Wall -Wextra
-CFLAGS = -g -O2 -std=c99 $(CWARNS)
-GPERF  = gperf
-RAGEL  = ragel
-CTAGS  = ctags
-VGRIND = valgrind -q --error-exitcode=1 --leak-check=full
-PREFIX = /usr/local
-BINDIR = $(PREFIX)/bin
-MANDIR = $(PREFIX)/share/man
+CWARNS ?= -Wall -Wextra
+CFLAGS ?= -g -O2 -std=c99 $(CWARNS)
+GPERF  ?= gperf
+RAGEL  ?= ragel
+CTAGS  ?= ctags
+VGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+MANDIR ?= $(PREFIX)/share/man
 
 RL_LANGS   = c css html lisp lua python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
@@ -43,7 +43,10 @@ uninstall:
 $(DESTDIR)$(BINDIR)/ $(DESTDIR)$(MANDIR)/man1/:
 	mkdir -p '$@'
 
-check: tally
+check: export CWARNS += -Werror
+check:
+	$(MAKE) clean tally CC=clang
+	$(MAKE) clean tally CC=gcc
 	$(VGRIND) ./tally > /dev/null
 	$(VGRIND) ./tally -d > /dev/null
 
