@@ -1,6 +1,8 @@
+image: debian:8.2
+
 before_script:
     - apt-get update -q
-    - apt-get install -qy build-essential clang gperf ragel valgrind
+    - apt-get install -qy gcc clang make gperf ragel valgrind
 
 check:
     script:
