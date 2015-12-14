@@ -1,0 +1,6 @@
+before_script:
+    - apt-get update -qq && apt-get install -y -qq build-essential gperf ragel valgrind
+
+check:
+    script:
+        - make check
