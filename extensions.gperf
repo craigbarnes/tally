@@ -103,6 +103,7 @@ sty, TEX
 tcl, TCL
 tex, TEX
 toml, TOML
+ui, XML
 vala, VALA
 vert, GLSL
 vim, VIML
