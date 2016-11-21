@@ -17,6 +17,7 @@ LanguageHashSlot;
 bashrc, SHELL
 bash_profile, SHELL
 bash_logout, SHELL
+PKGBUILD, SHELL
 CMakeLists.txt, CMAKE
 .luacheckrc, LUA
 .luacov, LUA
