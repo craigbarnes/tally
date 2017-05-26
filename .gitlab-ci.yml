@@ -6,4 +6,6 @@ before_script:
 
 check:
     script:
+        # TODO: remove LENGTH_TYPE override when Debian updates to gperf >= 3.1
+        - make CPPFLAGS=-DLENGTH_TYPE=unsigned
         - make check
