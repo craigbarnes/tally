@@ -23,7 +23,7 @@ Installation
 License
 -------
 
-Copyright (C) 2014-2015 Craig Barnes
+Copyright (C) 2014-2017 Craig Barnes
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the [GNU General Public License] as published by the
