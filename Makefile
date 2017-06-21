@@ -1,8 +1,8 @@
+include config.mk
+
 CWARNS ?= -Wall -Wextra
 CFLAGS ?= -g -O2 -std=c99 $(CWARNS)
-GPERF  ?= gperf
-RAGEL  ?= ragel
-CTAGS  ?= ctags
+CTAGS ?= ctags
 VGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
@@ -12,6 +12,7 @@ RL_LANGS   = c css html lisp lua python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
 PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
 
+all: tally
 tally: tally.o languages.o parse.o extensions.o filenames.o $(PARSERS)
 tally.o: languages.h parse.h
 languages.o: languages.h parse.h
@@ -23,25 +24,26 @@ $(RL_PARSERS): languages.h parse.h parsers/prelude.h parsers/common.rl
 $(RL_PARSERS): private CWARNS += -Wno-unused-const-variable
 extensions.o filenames.o: private CWARNS += -Wno-missing-field-initializers
 
-%.c: %.gperf
+%.c: %.gperf config.mk
 	$(GPERF) -L ANSI-C $< > $@
 
-parsers/%.c: parsers/%.rl
+parsers/%.c: parsers/%.rl config.mk
 	$(RAGEL) -o $@ $<
+
+config.mk: configure
+	@test -f '$@' || ./configure
 
 tags: tally.c parse.[ch] languages.[ch]
 	$(CTAGS) -f $@ $^
 
-install: tally | $(DESTDIR)$(BINDIR)/ $(DESTDIR)$(MANDIR)/man1/
+install: all
+	mkdir -p '$(DESTDIR)$(BINDIR)/' '$(DESTDIR)$(MANDIR)/man1/'
 	install -p -m 0755 tally '$(DESTDIR)$(BINDIR)/tally'
 	install -p -m 0644 tally.1 '$(DESTDIR)$(MANDIR)/man1/tally.1'
 
 uninstall:
 	$(RM) '$(DESTDIR)$(BINDIR)/tally'
 	$(RM) '$(DESTDIR)$(MANDIR)/man1/tally.1'
-
-$(DESTDIR)$(BINDIR)/ $(DESTDIR)$(MANDIR)/man1/:
-	mkdir -p '$@'
 
 check: export CWARNS += -Werror
 check:
@@ -54,5 +56,5 @@ clean:
 	$(RM) tally *.o parsers/*.o
 
 
-.PHONY: install uninstall check clean
+.PHONY: all install uninstall check clean
 .DELETE_ON_ERROR:
