@@ -1,10 +1,7 @@
-image: debian:latest
-
-before_script:
-    - apt-get update -q
-    - apt-get install -qy gcc clang make gperf ragel valgrind
-
 check:
+    image: debian:latest
+    stage: test
     script:
-        - make -j`nproc`
+        - apt-get update
+        - apt-get install -qy gcc clang make gperf ragel valgrind
         - make check

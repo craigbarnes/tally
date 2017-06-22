@@ -47,8 +47,8 @@ uninstall:
 
 check: export CWARNS += -Werror
 check:
-	$(MAKE) clean tally CC=clang
-	$(MAKE) clean tally CC=gcc
+	$(MAKE) -B -j`nproc` CC=clang
+	$(MAKE) -B -j`nproc` CC=gcc
 	$(VGRIND) ./tally > /dev/null
 	$(VGRIND) ./tally -d > /dev/null
 
