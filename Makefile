@@ -1,7 +1,8 @@
 include config.mk
 
 CWARNS ?= -Wall -Wextra
-CFLAGS ?= -g -O2 -std=c99 $(CWARNS)
+CFLAGS ?= -g -O2
+XCFLAGS = -std=c99
 CTAGS ?= ctags
 VGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
 PREFIX ?= /usr/local
@@ -11,18 +12,26 @@ MANDIR ?= $(PREFIX)/share/man
 RL_LANGS   = c css html lisp lua python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
 PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
+HASHTABLES = extensions.o filenames.o
+
+$(RL_PARSERS): private CWARNS += \
+    -Wno-unused-const-variable \
+    -Wno-unused-but-set-variable
+
+$(HASHTABLES): private CWARNS += \
+    -Wno-missing-field-initializers
 
 all: tally
-tally: tally.o languages.o parse.o extensions.o filenames.o $(PARSERS)
+tally: tally.o languages.o parse.o $(HASHTABLES) $(PARSERS)
 tally.o: languages.h parse.h
 languages.o: languages.h parse.h
 parse.o: parse.h
-extensions.o filenames.o: languages.h
 parsers/plain.o parsers/shell.o: languages.h parse.h
 $(RL_PARSERS): languages.h parse.h parsers/prelude.h parsers/common.rl
+$(HASHTABLES): languages.h
 
-$(RL_PARSERS): private CWARNS += -Wno-unused-const-variable
-extensions.o filenames.o: private CWARNS += -Wno-missing-field-initializers
+%.o: %.c
+	$(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 %.c: %.gperf config.mk
 	$(GPERF) -L ANSI-C $< > $@
