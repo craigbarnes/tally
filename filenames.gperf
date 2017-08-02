@@ -35,3 +35,4 @@ Rakefile, RUBY
 rakefile, RUBY
 Gemfile, RUBY
 Vagrantfile, RUBY
+meson.build, MESON

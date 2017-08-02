@@ -41,6 +41,7 @@ typedef enum {
     MAKE,
     MALLARD,
     MARKDOWN,
+    MESON,
     MOONSCRIPT,
     OBJECTIVEC,
     PERL,

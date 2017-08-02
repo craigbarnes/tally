@@ -9,7 +9,7 @@ PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 MANDIR ?= $(PREFIX)/share/man
 
-RL_LANGS   = c css html lisp lua python sql xml
+RL_LANGS   = c css html lisp lua meson python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
 PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
 HASHTABLES = extensions.o filenames.o
