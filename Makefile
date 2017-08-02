@@ -1,6 +1,6 @@
 include config.mk
 
-CWARNS ?= -Wall -Wextra
+CWARNS ?= -Wall -Wmissing-field-initializers
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
 CTAGS ?= ctags
@@ -15,8 +15,7 @@ PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
 HASHTABLES = extensions.o filenames.o
 
 $(RL_PARSERS): private CWARNS += \
-    -Wno-unused-const-variable \
-    -Wno-unused-but-set-variable
+    -Wno-unused-const-variable
 
 $(HASHTABLES): private CWARNS += \
     -Wno-missing-field-initializers

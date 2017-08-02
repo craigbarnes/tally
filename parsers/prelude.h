@@ -18,7 +18,8 @@
     int cs; \
     int act; \
     char *ts; \
-    char *te;
+    char *te; \
+    (void)act; // Silence unused-but-set-variable warnings
 
 #define deinit() \
     munmap(buffer_start, buffer_size)
