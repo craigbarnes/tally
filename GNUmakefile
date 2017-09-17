@@ -1,5 +1,7 @@
 include config.mk
 
+CC ?= gcc
+LD = $(CC)
 CWARNS ?= -Wall -Wmissing-field-initializers
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
@@ -21,7 +23,6 @@ $(HASHTABLES): private CWARNS += \
     -Wno-missing-field-initializers
 
 all: tally
-tally: tally.o languages.o parse.o $(HASHTABLES) $(PARSERS)
 tally.o: languages.h parse.h
 languages.o: languages.h parse.h
 parse.o: parse.h
@@ -29,14 +30,21 @@ parsers/plain.o parsers/shell.o: languages.h parse.h
 $(RL_PARSERS): languages.h parse.h parsers/prelude.h parsers/common.rl
 $(HASHTABLES): languages.h
 
+tally: tally.o languages.o parse.o $(HASHTABLES) $(PARSERS)
+	$(E) LINK $@
+	$(Q) $(LD) $(LDFLAGS) -o $@ $^
+
 %.o: %.c
-	$(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(E) CC $@
+	$(Q) $(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 %.c: %.gperf config.mk
-	$(GPERF) -L ANSI-C $< > $@
+	$(E) GPERF $@
+	$(Q) $(GPERF) -L ANSI-C $< > $@
 
 parsers/%.c: parsers/%.rl config.mk
-	$(RAGEL) -o $@ $<
+	$(E) RAGEL $@
+	$(Q) $(RAGEL) -o $@ $<
 
 config.mk: configure
 	@test -f '$@' || ./configure
@@ -66,3 +74,17 @@ clean:
 
 .PHONY: all install uninstall check clean
 .DELETE_ON_ERROR:
+
+ifneq "$(findstring s,$(firstword -$(MAKEFLAGS)))$(filter -s,$(MAKEFLAGS))" ""
+  # Make "-s" flag was used (silent build)
+  Q = @
+  E = @:
+else ifeq "$(V)" "1"
+  # "V=1" variable was set (verbose build)
+  Q =
+  E = @:
+else
+  # Normal build
+  Q = @
+  E = @printf ' %7s  %s\n'
+endif
