@@ -18,7 +18,7 @@ portable to any [POSIX.1-2008] compliant OS.
 Installation
 ------------
 
-    make && sudo make install
+    make -j8 && sudo make install
 
 License
 -------
