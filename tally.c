@@ -75,7 +75,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
     return FTW_CONTINUE;
 }
 
-int compare(const void *p1, const void *p2) {
+static int compare(const void *p1, const void *p2) {
     const Language l1 = *(const Language*)p1, l2 = *(const Language*)p2;
     const u64 c1 = (&line_counts[l1])->code, c2 = (&line_counts[l2])->code;
     if (c1 == c2) {

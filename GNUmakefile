@@ -2,7 +2,6 @@ include config.mk
 
 CC ?= gcc
 LD = $(CC)
-CWARNS ?= -Wall -Wmissing-field-initializers
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
 CTAGS ?= ctags
@@ -15,6 +14,10 @@ RL_LANGS   = c css html lisp lua meson python sql xml
 RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
 PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
 HASHTABLES = extensions.o filenames.o
+
+CWARNS = \
+    -Wall -Wextra -Wformat-security -Wmissing-prototypes \
+    -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
 
 $(RL_PARSERS): private CWARNS += \
     -Wno-unused-const-variable
