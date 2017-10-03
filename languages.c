@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <assert.h>
 #include <string.h>
 #include <unistd.h>
 #include "languages.h"
@@ -132,10 +132,7 @@ Parser lookup_language_parser(Language language) {
 
 const char *lookup_language_name(Language lang) {
     const char *name = language_names[lang];
-    if (!name) {
-        fprintf(stderr, "Error: language_names[%d] is missing\n", lang);
-        exit(EXIT_FAILURE);
-    }
+    assert(name);
     return name;
 }
 
