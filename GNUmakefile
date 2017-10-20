@@ -1,3 +1,4 @@
+include mk/compat.mk
 include config.mk
 
 CC ?= gcc
@@ -19,19 +20,24 @@ CWARNS = \
     -Wall -Wextra -Wformat-security -Wmissing-prototypes \
     -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
 
+ifdef WERROR
+  CWARNS += -Werror
+endif
+
 $(RL_PARSERS): private CWARNS += \
     -Wno-unused-const-variable
 
 $(HASHTABLES): private CWARNS += \
     -Wno-missing-field-initializers
 
-all: tally
 tally.o: languages.h parse.h
 languages.o: languages.h parse.h
 parse.o: parse.h
 parsers/plain.o parsers/shell.o: languages.h parse.h
 $(RL_PARSERS): languages.h parse.h parsers/prelude.h parsers/common.rl
 $(HASHTABLES): languages.h
+
+all: tally
 
 tally: tally.o languages.o parse.o $(HASHTABLES) $(PARSERS)
 	$(E) LINK $@
@@ -64,10 +70,7 @@ uninstall:
 	$(RM) '$(DESTDIR)$(BINDIR)/tally'
 	$(RM) '$(DESTDIR)$(MANDIR)/man1/tally.1'
 
-check: export CWARNS += -Werror
-check:
-	$(MAKE) -B -j`nproc` CC=clang
-	$(MAKE) -B -j`nproc` CC=gcc
+check: all
 	$(VGRIND) ./tally > /dev/null
 	$(VGRIND) ./tally -d > /dev/null
 
@@ -75,6 +78,7 @@ clean:
 	$(RM) tally *.o parsers/*.o
 
 
+.DEFAULT_GOAL = all
 .PHONY: all install uninstall check clean
 .DELETE_ON_ERROR:
 

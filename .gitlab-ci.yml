@@ -1,7 +1,13 @@
-check:
-    image: debian:latest
+test:debian:
     stage: test
-    script:
-        - apt-get update
-        - apt-get install -qy gcc clang make gperf ragel valgrind
-        - make check
+    image: registry.gitlab.com/craigbarnes/dockerfiles/cdev-debian
+    script: &SCRIPT
+        - export MAKEFLAGS="-j$(mk/nproc.sh)" WERROR=1
+        - make check CC=gcc
+        - make clean
+        - make check CC=clang
+
+test:alpine:
+    stage: test
+    image: registry.gitlab.com/craigbarnes/dockerfiles/cdev-alpine
+    script: *SCRIPT
