@@ -6,8 +6,3 @@ test:debian:
         - make check CC=gcc
         - make clean
         - make check CC=clang
-
-test:alpine:
-    stage: test
-    image: registry.gitlab.com/craigbarnes/dockerfiles/cdev-alpine
-    script: *SCRIPT
