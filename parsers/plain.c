@@ -6,7 +6,7 @@
 LineCount parse_plain(const char *path, size_t size) {
     (void)size;
     FILE *stream = xfopen(path);
-    u64 code = 0ULL, blank = 0ULL;
+    uint64_t code = 0, blank = 0;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
@@ -19,5 +19,5 @@ LineCount parse_plain(const char *path, size_t size) {
     }
     free(line);
     fclose(stream);
-    return (LineCount){.code = code, .comment = 0ULL, .blank = blank};
+    return (LineCount){.code = code, .comment = 0, .blank = blank};
 }

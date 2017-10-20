@@ -19,14 +19,17 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <assert.h>
 #include <locale.h>
 #include "languages.h"
 
-static LineCount line_counts[NUM_LANGUAGES] = {{0ULL, 0ULL, 0ULL}};
-static u64 file_counts[NUM_LANGUAGES] = {0ULL};
+#define COL " %'10" PRIu64
+
+static LineCount line_counts[NUM_LANGUAGES] = {{0, 0, 0}};
+static uint64_t file_counts[NUM_LANGUAGES] = {0};
 
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
@@ -66,7 +69,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
             const char *name = lookup_language_name(language);
             Parser parser = lookup_language_parser(language);
             LineCount c = parser(f, s->st_size);
-            printf("%'8llu  %-12s %s\n", c.code, name, f);
+            printf("%'8" PRIu64 "  %-12s %s\n", c.code, name, f);
         }
     } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
         return FTW_SKIP_SUBTREE;
@@ -77,7 +80,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
 
 static int compare(const void *p1, const void *p2) {
     const Language l1 = *(const Language*)p1, l2 = *(const Language*)p2;
-    const u64 c1 = (&line_counts[l1])->code, c2 = (&line_counts[l2])->code;
+    const uint64_t c1 = (&line_counts[l1])->code, c2 = (&line_counts[l2])->code;
     if (c1 == c2) {
         return 0;
     } else if (c1 > c2) {
@@ -153,8 +156,8 @@ int main(int argc, char *argv[]) {
 
     if (cb == summary) {
         Language index[NUM_LANGUAGES];
-        unsigned int n = 0U;
-        u64 tfiles = 0ULL, tcode = 0ULL, tcomment = 0ULL, tblank = 0ULL;
+        size_t n = 0;
+        uint64_t tfiles = 0, tcode = 0, tcomment = 0, tblank = 0;
 
         for (Language lang = 2; lang < NUM_LANGUAGES; lang++) {
             if (file_counts[lang] > 0ULL) {
@@ -168,34 +171,36 @@ int main(int argc, char *argv[]) {
             exit(EXIT_SUCCESS);
         }
 
-        const char *fmt_header, *fmt_totals, *fmt_dimrow;
-        const char *fmt_row = "%-15s %'10llu %'10llu %'10llu %'10llu\n";
+        static const char *const fmt_row = "%-15s" COL COL COL COL "\n";
+        static const char *bold = "";
+        static const char *dim = "";
+        static const char *reset = "";
+
         if (isatty(fileno(stdout))) {
-            fmt_header = "\033[1m%-15s %10s %10s %10s %10s\033[0m\n";
-            fmt_totals = "\033[1m%-15s %'10u %'10u %'10u %'10u\033[0m\n";
-            fmt_dimrow = "\033[2m%-15s %'10llu\033[0m\n";
-        } else {
-            fmt_header = "%-15s %10s %10s %10s %10s\n";
-            fmt_totals = "%-15s %'10u %'10u %'10u %'10u\n";
-            fmt_dimrow = "%-15s %'10llu\n";
+            bold = "\033[1m";
+            dim = "\033[2m";
+            reset = "\033[0m";
         }
 
-        printf(fmt_header, "Language", "Files", "Code", "Comment", "Blank");
+        printf (
+            "%s%-15s %10s %10s %10s %10s%s\n",
+            bold, "Language", "Files", "Code", "Comment", "Blank", reset
+        );
 
         if (n == 1) {
-            Language lang = index[0];
-            const char *name = lookup_language_name(lang);
-            const u64 nfiles = file_counts[lang];
+            const Language lang = index[0];
+            const char *const name = lookup_language_name(lang);
+            const uint64_t nfiles = file_counts[lang];
             const LineCount *const c = &line_counts[lang];
             printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
             exit(EXIT_SUCCESS);
         }
 
         qsort(index, n, sizeof(Language), compare);
-        for (unsigned int i = 0U; i < n; i++) {
-            Language lang = index[i];
-            const char *name = lookup_language_name(lang);
-            const u64 nfiles = file_counts[lang];
+        for (size_t i = 0; i < n; i++) {
+            const Language lang = index[i];
+            const char *const name = lookup_language_name(lang);
+            const uint64_t nfiles = file_counts[lang];
             const LineCount *const c = &line_counts[lang];
             printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
             tcode += c->code;
@@ -203,12 +208,23 @@ int main(int argc, char *argv[]) {
             tblank += c->blank;
         }
 
-        printf(fmt_totals, "Total:", tfiles, tcode, tcomment, tblank);
+        printf (
+            "%s%-15s" COL COL COL COL "%s\n",
+            bold, "Total:", tfiles, tcode, tcomment, tblank, reset
+        );
+
         if (file_counts[UNKNOWN] > 0ULL) {
-            printf(fmt_dimrow, "Unrecognized", file_counts[UNKNOWN]);
+            printf (
+                "%s%-15s" COL "%s\n",
+                dim, "Unrecognized", file_counts[UNKNOWN], reset
+            );
         }
+
         if (file_counts[IGNORED] > 0ULL) {
-            printf(fmt_dimrow, "Ignored", file_counts[IGNORED]);
+            printf (
+                "%s%-15s" COL "%s\n",
+                dim, "Ignored", file_counts[IGNORED], reset
+            );
         }
     }
 

@@ -9,9 +9,9 @@
     char *line_start = NULL; \
     bool whole_line_comment = false; \
     bool line_contains_code = false; \
-    u64 ncode = 0ULL; \
-    u64 ncomment = 0ULL; \
-    u64 nblank = 0ULL; \
+    uint64_t ncode = 0; \
+    uint64_t ncomment = 0; \
+    uint64_t nblank = 0; \
     char *p = buffer_start; \
     char *pe = buffer_start + size; \
     char *eof = pe; \

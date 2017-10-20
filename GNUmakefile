@@ -17,7 +17,7 @@ PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
 HASHTABLES = extensions.o filenames.o
 
 CWARNS = \
-    -Wall -Wextra -Wformat-security -Wmissing-prototypes \
+    -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
     -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
 
 ifdef WERROR

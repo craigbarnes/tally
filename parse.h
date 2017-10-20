@@ -1,8 +1,8 @@
 #pragma once
 #include <stdio.h>
+#include <stdint.h>
 
-typedef unsigned long long int u64;
-typedef struct {u64 code, comment, blank;} LineCount;
+typedef struct {uint64_t code, comment, blank;} LineCount;
 typedef LineCount (*Parser)(const char*, size_t);
 
 LineCount parse_c(const char*, size_t);

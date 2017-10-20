@@ -6,7 +6,7 @@
 LineCount parse_shell(const char *path, size_t size) {
     (void)size;
     FILE *stream = xfopen(path);
-    u64 code = 0ULL, comment = 0ULL, blank = 0ULL;
+    uint64_t code = 0, comment = 0, blank = 0;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
