@@ -6,7 +6,7 @@
 #include <sys/mman.h>
 #include "parse.h"
 
-inline char *mmapfile(const char *path, size_t size) {
+char *mmapfile(const char *path, size_t size) {
     assert(path);
     assert(size > 0);
     int fd = open(path, O_RDONLY);
@@ -23,7 +23,7 @@ inline char *mmapfile(const char *path, size_t size) {
     return addr;
 }
 
-inline FILE *xfopen(const char *path) {
+FILE *xfopen(const char *path) {
     FILE *stream = fopen(path, "r");
     if (stream == NULL) {
         perror("fopen");
@@ -32,9 +32,9 @@ inline FILE *xfopen(const char *path) {
     return stream;
 }
 
-inline char first_nonspace_char(const char *str, size_t len) {
+char first_nonspace_char(const char *str, size_t len) {
     for (size_t i = 0; i < len; i++) {
-        char c = str[i];
+        const char c = str[i];
         switch (c) {
         case ' ': case '\t': case '\f': case '\v': case '\r':
             break;

@@ -131,13 +131,13 @@ Parser lookup_language_parser(Language language) {
 }
 
 const char *lookup_language_name(Language lang) {
-    const char *name = language_names[lang];
+    const char *const name = language_names[lang];
     assert(name);
     return name;
 }
 
-static inline const char *file_extension(const char *filename) {
-    const char *dot = strrchr(filename, '.');
+static inline const char *file_extension(const char *const filename) {
+    const char *const dot = strrchr(filename, '.');
     if(!dot || dot == filename) {
         return NULL;
     }

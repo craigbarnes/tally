@@ -91,8 +91,7 @@ static int compare(const void *p1, const void *p2) {
 }
 
 int main(int argc, char *argv[]) {
-    const char *const optstring = "sidh";
-    const char *const help =
+    static const char help[] =
         "Usage: tally [OPTION] [PATH]...\n\n"
         "Options:\n\n"
         "   -s   Show line counts per language (default)\n"
@@ -104,7 +103,7 @@ int main(int argc, char *argv[]) {
     int (*cb)(const char*, const struct stat*, int, struct FTW*) = summary;
     setlocale(LC_ALL, "");
 
-    for (int opt; (opt = getopt(argc, argv, optstring)) != -1; ) {
+    for (int opt; (opt = getopt(argc, argv, "sidh")) != -1; ) {
         switch (opt) {
         case 'd':
             cb = detect;
@@ -132,7 +131,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = optind; i < argc; i++) {
-        const char *path = argv[i];
+        const char *const path = argv[i];
         if (access(path, R_OK) != 0) {
             perror(path);
             exit(EXIT_FAILURE);
@@ -140,7 +139,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = optind; i < argc; i++) {
-        const char *path = argv[i];
+        const char *const path = argv[i];
         if (nftw(path, cb, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
             perror("nftw");
             exit(EXIT_FAILURE);
