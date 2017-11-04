@@ -38,6 +38,7 @@ cxx, CPLUSPLUS
 dart, DART
 d, D
 desktop, INI
+doap, XML
 el, EMACSLISP
 emacs, EMACSLISP
 flatpakref, INI
@@ -128,6 +129,7 @@ cache, IGNORED
 dat, IGNORED
 diff, IGNORED
 doc, IGNORED
+exe, IGNORED
 gif, IGNORED
 gpg, IGNORED
 gz, IGNORED
@@ -161,6 +163,7 @@ tar, IGNORED
 tgz, IGNORED
 tiff, IGNORED
 tif, IGNORED
+txt, IGNORED
 wav, IGNORED
 xls, IGNORED
 xlw, IGNORED
