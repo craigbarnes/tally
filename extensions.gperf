@@ -40,6 +40,8 @@ d, D
 desktop, INI
 el, EMACSLISP
 emacs, EMACSLISP
+flatpakref, INI
+flatpakrepo, INI
 frag, GLSL
 gawk, AWK
 glsl, GLSL
@@ -105,6 +107,7 @@ tex, TEX
 toml, TOML
 ui, XML
 vala, VALA
+vapi, VALA
 vert, GLSL
 vim, VIML
 xhtml, HTML
@@ -115,6 +118,7 @@ y, YACC
 #
 a, IGNORED
 aiff, IGNORED
+asc, IGNORED
 au, IGNORED
 avi, IGNORED
 bin, IGNORED
@@ -125,6 +129,7 @@ dat, IGNORED
 diff, IGNORED
 doc, IGNORED
 gif, IGNORED
+gpg, IGNORED
 gz, IGNORED
 icns, IGNORED
 jar, IGNORED
@@ -146,6 +151,7 @@ pnt, IGNORED
 ppt, IGNORED
 qt, IGNORED
 ra, IGNORED
+sig, IGNORED
 so, IGNORED
 svg, IGNORED
 svgz, IGNORED

@@ -18,6 +18,7 @@ bashrc, SHELL
 bash_profile, SHELL
 bash_logout, SHELL
 PKGBUILD, SHELL
+APKBUILD, SHELL
 CMakeLists.txt, CMAKE
 .luacheckrc, LUA
 .luacov, LUA
@@ -34,5 +35,9 @@ emacs, EMACSLISP
 Rakefile, RUBY
 rakefile, RUBY
 Gemfile, RUBY
+Capfile, RUBY
 Vagrantfile, RUBY
 meson.build, MESON
+#
+tags, IGNORED
+TAGS, IGNORED
