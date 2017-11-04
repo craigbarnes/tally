@@ -25,6 +25,7 @@ typedef enum {
     CSS,
     D,
     DART,
+    DOCKER,
     EMACSLISP,
     GLSL,
     GO,

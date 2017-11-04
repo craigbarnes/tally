@@ -38,6 +38,7 @@ Gemfile, RUBY
 Capfile, RUBY
 Vagrantfile, RUBY
 meson.build, MESON
+Dockerfile, DOCKER
 #
 tags, IGNORED
 TAGS, IGNORED
