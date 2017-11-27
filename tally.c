@@ -35,7 +35,7 @@ static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         bool dotslash = f[0] == '.' && f[1] == '/';
-        printf("%-20s  %s\n", dotslash? f+2 : f, lookup_language_name(lang));
+        printf("%12s  %s\n", lookup_language_name(lang), dotslash? f+2 : f);
     } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
         return FTW_SKIP_SUBTREE;
     }
