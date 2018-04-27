@@ -29,8 +29,10 @@ tags: tally.c parse.[ch] languages.[ch]
 	$(CTAGS) -f $@ $^
 
 clean:
-	$(RM) tally *.o parsers/*.o
+	$(RM) $(CLEANFILES)
+	$(RM) -r $(CLEANDIRS)
 
 
 .DEFAULT_GOAL = all
 .PHONY: install uninstall clean
+.DELETE_ON_ERROR:

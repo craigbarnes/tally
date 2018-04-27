@@ -1,4 +1,4 @@
-config.mk
-*.o
-tally
-tags
+/build/
+/tally
+/config.mk
+/tags

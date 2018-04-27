@@ -1,13 +1,12 @@
 CC ?= gcc
-LD = $(CC)
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
-VGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
+VALGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
 
-RL_LANGS   = c css html lisp lua meson python sql xml
-RL_PARSERS = $(addprefix parsers/, $(addsuffix .o, $(RL_LANGS)))
-PARSERS    = $(RL_PARSERS) parsers/plain.o parsers/shell.o
-HASHTABLES = extensions.o filenames.o
+LANGS_RL = c css html lisp lua meson python sql xml
+PARSERS_RL = $(foreach L, $(LANGS_RL), build/parsers/$L.o)
+PARSERS = $(PARSERS_RL) build/parsers/plain.o build/parsers/shell.o
+HASHTABLES = build/extensions.o build/filenames.o
 
 CWARNS = \
     -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
@@ -17,47 +16,54 @@ ifdef WERROR
   CWARNS += -Werror
 endif
 
-$(RL_PARSERS): private CWARNS += \
-    -Wno-unused-const-variable
+$(PARSERS_RL): XCFLAGS += -Iparsers
+$(PARSERS_RL): CWARNS += -Wno-unused-const-variable
+$(HASHTABLES): CWARNS += -Wno-missing-field-initializers
 
-$(HASHTABLES): private CWARNS += \
-    -Wno-missing-field-initializers
-
-tally.o: languages.h parse.h
-languages.o: languages.h parse.h
-parse.o: parse.h
-parsers/plain.o parsers/shell.o: languages.h parse.h
-$(RL_PARSERS): languages.h parse.h parsers/prelude.h parsers/common.rl
+build/tally.o: languages.h parse.h
+build/languages.o: languages.h parse.h
+build/parse.o: parse.h
+build/parsers/plain.o build/parsers/shell.o: languages.h parse.h
+$(PARSERS_RL): languages.h parse.h parsers/prelude.h parsers/common.rl
 $(HASHTABLES): languages.h
 
 all: tally
 
-tally: tally.o languages.o parse.o $(HASHTABLES) $(PARSERS)
+tally: build/tally.o build/languages.o build/parse.o $(HASHTABLES) $(PARSERS)
 	$(E) LINK $@
-	$(Q) $(LD) $(LDFLAGS) -o $@ $^
+	$(Q) $(CC) $(LDFLAGS) -o $@ $^
 
-%.o: %.c
+$(PARSERS_RL) $(HASHTABLES): build/%.o: build/%.c
 	$(E) CC $@
 	$(Q) $(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
-%.c: %.gperf config.mk
+build/%.o: %.c | build/
+	$(E) CC $@
+	$(Q) $(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+build/%.c: %.gperf config.mk | build/
 	$(E) GPERF $@
 	$(Q) $(GPERF) -L ANSI-C $< > $@
 
-parsers/%.c: parsers/%.rl config.mk
+build/parsers/%.c: parsers/%.rl config.mk | build/parsers/
 	$(E) RAGEL $@
 	$(Q) $(RAGEL) -o $@ $<
 
 config.mk: configure
-	@test -f '$@' || ./configure
+	$(Q) test -f '$@' || ./configure
+
+build/ build/parsers/:
+	$(Q) mkdir -p $@
 
 check: all
-	$(VGRIND) ./tally > /dev/null
-	$(VGRIND) ./tally -d > /dev/null
+	$(VALGRIND) ./tally > /dev/null
+	$(VALGRIND) ./tally -d > /dev/null
+	$(VALGRIND) ./tally -i > /dev/null
 
 
+CLEANFILES += tally
+CLEANDIRS += build/
 .PHONY: all check
-.DELETE_ON_ERROR:
 
 ifneq "$(findstring s,$(firstword -$(MAKEFLAGS)))$(filter -s,$(MAKEFLAGS))" ""
   # Make "-s" flag was used (silent build)
