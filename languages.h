@@ -76,6 +76,4 @@ typedef struct {
 
 const LanguageHashSlot *lookup_language_by_extension(const char*, LENGTH_TYPE);
 const LanguageHashSlot *lookup_language_by_filename(const char*, LENGTH_TYPE);
-const char *lookup_language_name(Language id);
-Parser lookup_language_parser(Language id);
 Language detect_language(const char *path, int base, int level, size_t size);

@@ -31,11 +31,79 @@
 static LineCount line_counts[NUM_LANGUAGES] = {{0, 0, 0}};
 static uint64_t file_counts[NUM_LANGUAGES] = {0};
 
+typedef struct {
+    const char *const name;
+    const Parser parser;
+} LanguageInfo;
+
+static const LanguageInfo languages[NUM_LANGUAGES] = {
+    [UNKNOWN] = {"?", NULL},
+    [IGNORED] = {"!", NULL},
+    [ADA] = {"Ada", parse_plain}, // TODO: comment-aware parser
+    [APPLESCRIPT] = {"AppleScript", parse_plain}, // TODO: comment-aware parser
+    [ASSEMBLY] = {"Assembly", parse_plain}, // TODO: comment-aware parser
+    [AWK] = {"AWK", parse_shell},
+    [BATCHFILE] = {"Batchfile", parse_plain},
+    [C] = {"C", parse_c},
+    [CHEADER] = {"C Header", parse_c},
+    [CLOJURE] = {"Clojure", parse_lisp},
+    [CMAKE] = {"CMake", parse_shell},
+    [COFFEESCRIPT] = {"CoffeScript", parse_shell},
+    [COMMONLISP] = {"Common Lisp", parse_lisp},
+    [CPLUSPLUS] = {"C++", parse_c},
+    [CPLUSPLUSHEADER] = {"C++ Header", parse_c},
+    [CSHARP] = {"C#", parse_c},
+    [CSS] = {"CSS", parse_css},
+    [D] = {"D", parse_c},
+    [DART] = {"Dart", parse_c},
+    [DOCKER] = {"Dockerfile", parse_shell},
+    [EMACSLISP] = {"Emacs Lisp", parse_lisp},
+    [GLSL] = {"GLSL", parse_c},
+    [GO] = {"Go", parse_c},
+    [GPERF] = {"gperf", parse_plain},
+    [GROOVY] = {"Groovy", parse_c},
+    [HASKELL] = {"Haskell", parse_plain}, // TODO: comment-aware parser
+    [HTML] = {"HTML", parse_html},
+    [INI] = {"INI", parse_shell},
+    [JAVA] = {"Java", parse_c},
+    [JAVASCRIPT] = {"JavaScript", parse_c},
+    [JSON] = {"JSON", parse_plain},
+    [LEX] = {"Lex", parse_c},
+    [LUA] = {"Lua", parse_lua},
+    [MAKE] = {"Make", parse_shell},
+    [MALLARD] = {"Mallard", parse_xml},
+    [MARKDOWN] = {"Markdown", parse_plain},
+    [MESON] = {"Meson", parse_meson},
+    [MOONSCRIPT] = {"MoonScript", parse_plain}, // TODO: comment-aware parser
+    [OBJECTIVEC] = {"Objective-C", parse_c},
+    [PERL] = {"Perl", parse_shell},
+    [PHP] = {"PHP", parse_c},
+    [PKGCONFIG] = {"pkg-config", parse_shell},
+    [PROTOBUF] = {"Protobuf", parse_c},
+    [PYTHON] = {"Python", parse_python},
+    [RACKET] = {"Racket", parse_lisp},
+    [RUBY] = {"Ruby", parse_shell},
+    [RUST] = {"Rust", parse_c},
+    [SCHEME] = {"Scheme", parse_lisp},
+    [SCSS] = {"SCSS", parse_c},
+    [SED] = {"SED", parse_shell},
+    [SHELL] = {"Shell", parse_shell},
+    [SQL] = {"SQL", parse_sql},
+    [TCL] = {"TCL", parse_shell},
+    [TEX] = {"TeX", parse_plain}, // TODO: comment-aware parser
+    [TOML] = {"TOML", parse_shell},
+    [VALA] = {"Vala", parse_c},
+    [VIML] = {"VimL", parse_plain},
+    [XML] = {"XML", parse_xml},
+    [YACC] = {"YACC", parse_c},
+    [YAML] = {"YAML", parse_shell},
+};
+
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         bool dotslash = f[0] == '.' && f[1] == '/';
-        printf("%12s  %s\n", lookup_language_name(lang), dotslash? f+2 : f);
+        printf("%12s  %s\n", languages[lang].name, dotslash? f+2 : f);
     } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
         return FTW_SKIP_SUBTREE;
     }
@@ -45,12 +113,12 @@ static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
 
 static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
-        Language language = detect_language(f, w->base, w->level, s->st_size);
-        file_counts[language] += 1;
-        if (language != IGNORED && language != UNKNOWN) {
-            Parser parser = lookup_language_parser(language);
+        Language lang = detect_language(f, w->base, w->level, s->st_size);
+        file_counts[lang] += 1;
+        Parser parser = languages[lang].parser;
+        if (parser != NULL) {
             LineCount c = parser(f, s->st_size);
-            LineCount *count = &line_counts[language];
+            LineCount *count = &line_counts[lang];
             count->code += c.code;
             count->comment += c.comment;
             count->blank += c.blank;
@@ -64,10 +132,10 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
 
 static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
     if (t == FTW_F) {
-        Language language = detect_language(f, w->base, w->level, s->st_size);
-        if (language != IGNORED && language != UNKNOWN) {
-            const char *name = lookup_language_name(language);
-            Parser parser = lookup_language_parser(language);
+        Language lang = detect_language(f, w->base, w->level, s->st_size);
+        Parser parser = languages[lang].parser;
+        if (parser != NULL) {
+            const char *const name = languages[lang].name;
             LineCount c = parser(f, s->st_size);
             printf("%'8" PRIu64 "  %-12s %s\n", c.code, name, f);
         }
@@ -188,7 +256,7 @@ int main(int argc, char *argv[]) {
 
         if (n == 1) {
             const Language lang = index[0];
-            const char *const name = lookup_language_name(lang);
+            const char *const name = languages[lang].name;
             const uint64_t nfiles = file_counts[lang];
             const LineCount *const c = &line_counts[lang];
             printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
@@ -198,7 +266,7 @@ int main(int argc, char *argv[]) {
         qsort(index, n, sizeof(Language), compare);
         for (size_t i = 0; i < n; i++) {
             const Language lang = index[i];
-            const char *const name = lookup_language_name(lang);
+            const char *const name = languages[lang].name;
             const uint64_t nfiles = file_counts[lang];
             const LineCount *const c = &line_counts[lang];
             printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
