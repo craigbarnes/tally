@@ -31,12 +31,10 @@
 static LineCount line_counts[NUM_LANGUAGES] = {{0, 0, 0}};
 static uint64_t file_counts[NUM_LANGUAGES] = {0};
 
-typedef struct {
+static const struct {
     const char *const name;
     const Parser parser;
-} LanguageInfo;
-
-static const LanguageInfo languages[NUM_LANGUAGES] = {
+} languages[NUM_LANGUAGES] = {
     [UNKNOWN] = {"?", NULL},
     [IGNORED] = {"!", NULL},
     [ADA] = {"Ada", parse_plain}, // TODO: comment-aware parser
@@ -180,7 +178,7 @@ int main(int argc, char *argv[]) {
             cb = summary;
             break;
         case 'i':
-            if (isatty(fileno(stdout))) {
+            if (isatty(STDOUT_FILENO)) {
                 printf("\033[1m%8s  %-12s File\033[0m\n", "SLOC", "Language");
             } else {
                 printf("%8s  %-12s File\n", "SLOC", "Language");
@@ -234,7 +232,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (n == 0) {
-            puts("Nothing found");
+            fputs("Nothing found", stderr);
             exit(EXIT_SUCCESS);
         }
 
@@ -243,7 +241,7 @@ int main(int argc, char *argv[]) {
         static const char *dim = "";
         static const char *reset = "";
 
-        if (isatty(fileno(stdout))) {
+        if (isatty(STDOUT_FILENO)) {
             bold = "\033[1m";
             dim = "\033[2m";
             reset = "\033[0m";
