@@ -1,5 +1,4 @@
 include mk/compat.mk
-include config.mk
 include mk/build.mk
 
 prefix ?= /usr/local

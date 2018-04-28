@@ -7,7 +7,7 @@ Requirements
 ------------
 
 * C99 compiler
-* [GNU Make]
+* [GNU Make] 3.81+
 * [GNU gperf]
 * [Ragel]
 

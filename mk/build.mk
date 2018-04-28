@@ -1,7 +1,13 @@
 CC ?= gcc
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
+RAGEL = ragel
 VALGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
+
+GPERF = gperf
+GPERF_CFLAGS = $(shell mk/gperf-config.sh '$(GPERF)')
+$(call make-lazy,GPERF_CFLAGS)
+XCFLAGS += $(GPERF_CFLAGS)
 
 LANGS_RL = c css html lisp lua meson python sql xml
 PARSERS_RL = $(foreach L, $(LANGS_RL), build/parsers/$L.o)
@@ -41,16 +47,13 @@ build/%.o: %.c | build/
 	$(E) CC $@
 	$(Q) $(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
-build/%.c: %.gperf config.mk | build/
+build/%.c: %.gperf | build/
 	$(E) GPERF $@
 	$(Q) $(GPERF) -L ANSI-C $< > $@
 
-build/parsers/%.c: parsers/%.rl config.mk | build/parsers/
+build/parsers/%.c: parsers/%.rl | build/parsers/
 	$(E) RAGEL $@
 	$(Q) $(RAGEL) -o $@ $<
-
-config.mk: configure
-	$(Q) test -f '$@' || ./configure
 
 build/ build/parsers/:
 	$(Q) mkdir -p $@
