@@ -11,6 +11,7 @@
 LanguageHashSlot;
 
 %%
+ash, SHELL
 awk, AWK
 bash, SHELL
 bigloo, SCHEME
@@ -20,6 +21,7 @@ clisp, COMMONLISP
 coffee, COFFEESCRIPT
 ecl, COMMONLISP
 gawk, AWK
+gmake, MAKE
 groovy, GROOVY
 guile, SCHEME
 lisp, COMMONLISP
@@ -27,10 +29,13 @@ lua, LUA
 make, MAKE
 mawk, AWK
 nawk, AWK
+node, JAVASCRIPT
 osascript, APPLESCRIPT
 perl, PERL
 php, PHP
 python, PYTHON
+python2, PYTHON
+python3, PYTHON
 racket, SCHEME
 ruby, RUBY
 sbcl, COMMONLISP
