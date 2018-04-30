@@ -5,6 +5,8 @@
 %struct-type
 %omit-struct-type
 %readonly-tables
+%null-strings
+%compare-lengths
 %includes
 %define lookup-function-name lookup_language_by_hashbang
 %define slot-name key
