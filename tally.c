@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (n == 0) {
-            fputs("Nothing found", stderr);
+            fputs("Nothing found\n", stderr);
             exit(EXIT_SUCCESS);
         }
 
