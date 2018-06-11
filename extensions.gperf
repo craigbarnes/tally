@@ -9,6 +9,7 @@
 %compare-lengths
 %includes
 %define lookup-function-name lookup_language_by_extension
+%define initializer-suffix ,0
 %define slot-name key
 LanguageHashSlot;
 

@@ -24,7 +24,6 @@ endif
 
 $(PARSERS_RL): XCFLAGS += -Iparsers
 $(PARSERS_RL): CWARNS += -Wno-unused-const-variable
-$(HASHTABLES): CWARNS += -Wno-missing-field-initializers
 
 build/tally.o: languages.h parse.h
 build/languages.o: languages.h parse.h
