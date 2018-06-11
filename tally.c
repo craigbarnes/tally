@@ -32,7 +32,7 @@ static LineCount line_counts[NUM_LANGUAGES] = {{0, 0, 0}};
 static uint64_t file_counts[NUM_LANGUAGES] = {0};
 
 static const struct {
-    const char *const name;
+    const char name[16];
     const Parser parser;
 } languages[NUM_LANGUAGES] = {
     [UNKNOWN] = {"?", NULL},
