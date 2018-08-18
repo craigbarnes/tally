@@ -14,15 +14,6 @@
 LanguageHashSlot;
 
 %%
-1, ROFF
-2, ROFF
-3, ROFF
-4, ROFF
-5, ROFF
-6, ROFF
-7, ROFF
-8, ROFF
-9, ROFF
 ada, ADA
 adb, ADA
 ads, ADA

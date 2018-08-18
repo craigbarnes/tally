@@ -57,7 +57,6 @@ typedef enum {
     PYTHON,
     RACKET,
     RESTRUCTUREDTEXT,
-    ROFF,
     RUBY,
     RUST,
     SCALA,

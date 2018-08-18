@@ -85,7 +85,6 @@ static const struct {
     [PYTHON] = {"Python", parse_python},
     [RACKET] = {"Racket", parse_lisp},
     [RESTRUCTUREDTEXT] = {"reST", parse_plain},
-    [ROFF] = {"roff", parse_plain},
     [RUBY] = {"Ruby", parse_shell},
     [RUST] = {"Rust", parse_c},
     [SCALA] = {"Scala", parse_c},
