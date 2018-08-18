@@ -22,7 +22,6 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <assert.h>
 #include <locale.h>
 #include "languages.h"
 
@@ -42,6 +41,7 @@ static const struct {
     [ASSEMBLY] = {"Assembly", parse_plain}, // TODO: comment-aware parser
     [AWK] = {"AWK", parse_shell},
     [BATCHFILE] = {"Batchfile", parse_plain},
+    [BIBTEX] = {"BibTeX", parse_plain},
     [C] = {"C", parse_c},
     [CHEADER] = {"C Header", parse_c},
     [CLOJURE] = {"Clojure", parse_lisp},
@@ -50,8 +50,10 @@ static const struct {
     [COMMONLISP] = {"Common Lisp", parse_lisp},
     [CPLUSPLUS] = {"C++", parse_c},
     [CPLUSPLUSHEADER] = {"C++ Header", parse_c},
+    [CRYSTAL] = {"Crystal", parse_shell},
     [CSHARP] = {"C#", parse_c},
     [CSS] = {"CSS", parse_css},
+    [CSV] = {"CSV", parse_plain},
     [D] = {"D", parse_c},
     [DART] = {"Dart", parse_c},
     [DOCKER] = {"Dockerfile", parse_shell},
@@ -68,11 +70,13 @@ static const struct {
     [JSON] = {"JSON", parse_plain},
     [LEX] = {"Lex", parse_c},
     [LUA] = {"Lua", parse_lua},
+    [M4] = {"M4", parse_plain},
     [MAKE] = {"Make", parse_shell},
     [MALLARD] = {"Mallard", parse_xml},
     [MARKDOWN] = {"Markdown", parse_plain},
     [MESON] = {"Meson", parse_meson},
     [MOONSCRIPT] = {"MoonScript", parse_plain}, // TODO: comment-aware parser
+    [NGINX] = {"Nginx config", parse_shell},
     [OBJECTIVEC] = {"Objective-C", parse_c},
     [PERL] = {"Perl", parse_shell},
     [PHP] = {"PHP", parse_c},
@@ -80,17 +84,24 @@ static const struct {
     [PROTOBUF] = {"Protobuf", parse_c},
     [PYTHON] = {"Python", parse_python},
     [RACKET] = {"Racket", parse_lisp},
+    [RESTRUCTUREDTEXT] = {"reST", parse_plain},
+    [ROFF] = {"roff", parse_plain},
     [RUBY] = {"Ruby", parse_shell},
     [RUST] = {"Rust", parse_c},
+    [SCALA] = {"Scala", parse_c},
     [SCHEME] = {"Scheme", parse_lisp},
     [SCSS] = {"SCSS", parse_c},
     [SED] = {"SED", parse_shell},
     [SHELL] = {"Shell", parse_shell},
     [SQL] = {"SQL", parse_sql},
     [TCL] = {"TCL", parse_shell},
+    [TEXINFO] = {"Texinfo", parse_plain},
     [TEX] = {"TeX", parse_plain}, // TODO: comment-aware parser
     [TOML] = {"TOML", parse_shell},
+    [TYPESCRIPT] = {"TypeScript", parse_c},
     [VALA] = {"Vala", parse_c},
+    [VERILOG] = {"Verilog", parse_c},
+    [VHDL] = {"VHDL", parse_plain}, // TODO: comment-aware parser
     [VIML] = {"VimL", parse_plain},
     [XML] = {"XML", parse_xml},
     [YACC] = {"YACC", parse_c},
