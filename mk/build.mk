@@ -37,7 +37,7 @@ all: tally
 
 tally: build/tally.o build/languages.o build/parse.o $(HASHTABLES) $(PARSERS)
 	$(E) LINK $@
-	$(Q) $(CC) $(LDFLAGS) -o $@ $^
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 $(PARSERS_RL) $(HASHTABLES): build/%.o: build/%.c
 	$(E) CC $@
