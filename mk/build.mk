@@ -2,6 +2,7 @@ CC ?= gcc
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
 RAGEL = ragel
+RAGEL_FLAGS = -G2
 VALGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
 
 GPERF = gperf
@@ -23,7 +24,7 @@ ifdef WERROR
 endif
 
 $(PARSERS_RL): XCFLAGS += -Iparsers
-$(PARSERS_RL): CWARNS += -Wno-unused-const-variable
+$(PARSERS_RL): CWARNS += -Wno-unused-const-variable -Wno-implicit-fallthrough
 
 build/tally.o: languages.h parse.h
 build/languages.o: languages.h parse.h
@@ -52,7 +53,7 @@ build/%.c: %.gperf | build/
 
 build/parsers/%.c: parsers/%.rl | build/parsers/
 	$(E) RAGEL $@
-	$(Q) $(RAGEL) -o $@ $<
+	$(Q) $(RAGEL) $(RAGEL_FLAGS) -o $@ $<
 
 build/ build/parsers/:
 	$(Q) mkdir -p $@
