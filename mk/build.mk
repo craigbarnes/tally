@@ -4,6 +4,7 @@ XCFLAGS = -std=c99
 RAGEL = ragel
 RAGEL_FLAGS = -G2
 VALGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
+NPROC = $(or $(shell sh mk/nproc.sh), 1)
 
 GPERF = gperf
 GPERF_CFLAGS = $(shell mk/gperf-config.sh '$(GPERF)')
@@ -64,9 +65,16 @@ check: all
 	$(VALGRIND) ./tally -i > /dev/null
 
 
+.PHONY: all check
 CLEANFILES += tally
 CLEANDIRS += build/
-.PHONY: all check
+NON_PARALLEL_TARGETS += clean
+
+ifeq "" "$(filter $(NON_PARALLEL_TARGETS), $(or $(MAKECMDGOALS),all))"
+  ifeq "" "$(filter -j%, $(MAKEFLAGS))"
+    MAKEFLAGS += -j$(NPROC)
+  endif
+endif
 
 ifneq "$(findstring s,$(firstword -$(MAKEFLAGS)))$(filter -s,$(MAKEFLAGS))" ""
   # Make "-s" flag was used (silent build)
