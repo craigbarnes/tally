@@ -5,32 +5,28 @@
     write data;
     include common "common.rl";
 
-    xml_comment =
+    comment =
         '<!--' @comment (
             newline %std_internal_newline
-            |
-            ws
-            |
-            (nonnewline - ws) @comment
+            | ws
+            | (nonnewline - ws) @comment
         )* :>> '-->';
 
-    xml_cdata_str =
+    cdata =
         '<![CDATA[' @code (
             newline %std_internal_newline
-            |
-            ws
-            |
-            (nonnewline - ws) @code
+            | ws
+            | (nonnewline - ws) @code
         )* :>> ']]>';
 
-    xml_sq_str = '\'' [^\r\n\f']* '\'' @code;
-    xml_dq_str = '"' [^\r\n\f"]* '"' @code;
-    xml_string = xml_sq_str | xml_dq_str | xml_cdata_str;
+    sq_str = '\'' [^\r\n\f']* '\'' @code;
+    dq_str = '"' [^\r\n\f"]* '"' @code;
+    string = sq_str | dq_str | cdata;
 
-    xml_line := |*
+    line := |*
         spaces => ls;
-        xml_comment;
-        xml_string;
+        comment;
+        string;
         newline => std_newline;
         ^space => code;
     *|;
@@ -40,7 +36,7 @@
 LineCount parse_xml(const char *path, size_t size) {
     init(path, size);
     %% write init;
-    cs = xml_en_xml_line;
+    cs = xml_en_line;
     %% write exec;
     process_last_line();
     deinit();
