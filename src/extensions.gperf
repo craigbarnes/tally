@@ -1,5 +1,5 @@
 %{
-#include "../languages.h"
+#include "languages.h"
 %}
 
 %struct-type

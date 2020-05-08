@@ -1,6 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include <sys/mman.h>
+#include "../macros.h"
 #include "../parse.h"
 
 #define init(path, size) \
@@ -30,3 +31,6 @@
     } else if (whole_line_comment) { \
         ncomment++; \
     }
+
+DISABLE_WARNING("-Wimplicit-fallthrough")
+DISABLE_WARNING("-Wunused-const-variable")

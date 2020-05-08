@@ -14,11 +14,8 @@ rl_parser_objects := $(addprefix build/parsers/, $(addsuffix .o, \
 
 parser_objects := $(rl_parser_objects) build/parsers/shell.o
 gperf_objects := build/extensions.o build/filenames.o
-
-all_objects := \
-    build/tally.o build/languages.o build/parse.o \
-    $(gperf_objects) \
-    $(parser_objects)
+main_objects := build/tally.o build/languages.o build/parse.o
+all_objects := $(main_objects) $(gperf_objects) $(parser_objects)
 
 ifdef WERROR
   XCFLAGS += -Werror
@@ -44,10 +41,8 @@ GPERF_CFLAGS = $(shell mk/gperf-config.sh '$(GPERF)')
 $(call make-lazy,GPERF_CFLAGS)
 XCFLAGS += $(GPERF_CFLAGS)
 
-$(rl_parser_objects): XCFLAGS += \
-    -Iparsers \
-    -Wno-unused-const-variable \
-    -Wno-implicit-fallthrough
+$(gperf_objects): XCFLAGS += -I src
+$(rl_parser_objects): XCFLAGS += -I src/parsers
 
 CFLAGS_ALL = $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 LDFLAGS_ALL = $(CFLAGS) $(LDFLAGS) $(XLDFLAGS)
@@ -62,7 +57,7 @@ $(rl_parser_objects) $(gperf_objects): build/%.o: build/%.c build/all.cflags
 	$(E) CC $@
 	$(Q) $(CC) $(CFLAGS_ALL) $(DEPFLAGS) -c -o $@ $<
 
-build/%.o: %.c build/all.cflags | build/
+build/%.o: src/%.c build/all.cflags | build/
 	$(E) CC $@
 	$(Q) $(CC) $(CFLAGS_ALL) $(DEPFLAGS) -c -o $@ $<
 
@@ -72,11 +67,11 @@ build/all.ldflags: FORCE | build/
 build/all.cflags: FORCE | build/
 	@$(OPTCHECK) '$(CC) $(CFLAGS_ALL)' $@
 
-build/%.c: %.gperf | build/
+build/%.c: src/%.gperf | build/
 	$(E) GPERF $@
 	$(Q) $(GPERF) -L ANSI-C $< > $@
 
-build/parsers/%.c: parsers/%.rl parsers/common.rl | build/parsers/
+build/parsers/%.c: src/parsers/%.rl src/parsers/common.rl | build/parsers/
 	$(E) RAGEL $@
 	$(Q) $(RAGEL) $(RAGEL_FLAGS) -o $@ $<
 
