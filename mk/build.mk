@@ -10,9 +10,9 @@ XCFLAGS += \
     -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
 
 rl_parser_objects := $(addprefix build/parsers/, $(addsuffix .o, \
-    c css html lisp lua meson python sql xml ))
+    c css html lisp lua meson plain python sql xml ))
 
-parser_objects := $(rl_parser_objects) build/parsers/plain.o build/parsers/shell.o
+parser_objects := $(rl_parser_objects) build/parsers/shell.o
 gperf_objects := build/extensions.o build/filenames.o
 
 all_objects := \
