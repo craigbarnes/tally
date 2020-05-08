@@ -4,7 +4,6 @@ XCFLAGS = -std=c99
 GPERF = gperf
 RAGEL = ragel
 RAGEL_FLAGS = -G2
-VALGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
 
 XCFLAGS += \
     -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
@@ -85,9 +84,9 @@ build/ build/parsers/:
 	$(Q) mkdir -p $@
 
 check: all
-	$(VALGRIND) ./tally > /dev/null
-	$(VALGRIND) ./tally -d > /dev/null
-	$(VALGRIND) ./tally -i > /dev/null
+	./tally > /dev/null
+	./tally -d > /dev/null
+	./tally -i > /dev/null
 
 
 .PHONY: all check FORCE
