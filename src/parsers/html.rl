@@ -25,7 +25,8 @@
 
 }%%
 
-LineCount parse_html(const char *path, size_t size) {
+LineCount parse_html(const char *path, size_t size)
+{
     init(path, size);
     %% write init;
     cs = html_en_line;

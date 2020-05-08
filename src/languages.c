@@ -3,7 +3,8 @@
 #include <unistd.h>
 #include "languages.h"
 
-static inline const char *file_extension(const char *const filename) {
+static inline const char *file_extension(const char *const filename)
+{
     const char *const dot = strrchr(filename, '.');
     if(!dot || dot == filename) {
         return NULL;
@@ -11,7 +12,8 @@ static inline const char *file_extension(const char *const filename) {
     return dot + 1;
 }
 
-Language detect_language(const char *path, int base, int level, size_t size) {
+Language detect_language(const char *path, int base, int level, size_t size)
+{
     if (size == 0 || access(path, R_OK) != 0) {
         return IGNORED;
     }

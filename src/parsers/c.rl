@@ -49,7 +49,8 @@
 
 }%%
 
-LineCount parse_c(const char *path, size_t size) {
+LineCount parse_c(const char *path, size_t size)
+{
     init(path, size);
     %% write init;
     cs = c_en_line;

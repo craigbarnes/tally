@@ -33,7 +33,8 @@
 
 }%%
 
-LineCount parse_xml(const char *path, size_t size) {
+LineCount parse_xml(const char *path, size_t size)
+{
     init(path, size);
     %% write init;
     cs = xml_en_line;

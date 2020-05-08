@@ -30,7 +30,8 @@
 
 }%%
 
-LineCount parse_sql(const char *path, size_t size) {
+LineCount parse_sql(const char *path, size_t size)
+{
     init(path, size);
     %% write init;
     cs = sql_en_line;

@@ -35,7 +35,8 @@
 
 }%%
 
-LineCount parse_lua(const char *path, size_t size) {
+LineCount parse_lua(const char *path, size_t size)
+{
     init(path, size);
     %% write init;
     cs = lua_en_line;

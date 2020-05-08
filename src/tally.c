@@ -107,7 +107,8 @@ static const struct {
     [YAML] = {"YAML", parse_shell},
 };
 
-static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
+static int detect(const char *f, const struct stat *s, int t, struct FTW *w)
+{
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         bool dotslash = f[0] == '.' && f[1] == '/';
@@ -119,7 +120,8 @@ static int detect(const char *f, const struct stat *s, int t, struct FTW *w) {
     return FTW_CONTINUE;
 }
 
-static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
+static int summary(const char *f, const struct stat *s, int t, struct FTW *w)
+{
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         file_counts[lang] += 1;
@@ -138,7 +140,8 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w) {
     return FTW_CONTINUE;
 }
 
-static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
+static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
+{
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         Parser parser = languages[lang].parser;
@@ -154,7 +157,8 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w) {
     return FTW_CONTINUE;
 }
 
-static int compare(const void *p1, const void *p2) {
+static int compare(const void *p1, const void *p2)
+{
     const Language l1 = *(const Language*)p1, l2 = *(const Language*)p2;
     const uint64_t c1 = (&line_counts[l1])->code, c2 = (&line_counts[l2])->code;
     if (c1 == c2) {
@@ -166,7 +170,8 @@ static int compare(const void *p1, const void *p2) {
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     static const char help[] =
         "Usage: tally [OPTION] [PATH]...\n\n"
         "Options:\n\n"

@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include "../parse.h"
 
-LineCount parse_shell(const char *path, size_t size) {
+LineCount parse_shell(const char *path, size_t size)
+{
     (void)size;
     FILE *stream = xfopen(path);
     uint64_t code = 0, comment = 0, blank = 0;

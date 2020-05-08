@@ -43,7 +43,8 @@
 
 }%%
 
-LineCount parse_python(const char *path, size_t size) {
+LineCount parse_python(const char *path, size_t size)
+{
     init(path, size);
     %% write init;
     cs = python_en_line;
