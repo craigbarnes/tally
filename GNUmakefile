@@ -26,7 +26,7 @@ uninstall:
 	$(RM) '$(DESTDIR)$(bindir)/tally'
 	$(RM) '$(DESTDIR)$(man1dir)/tally.1'
 
-tags: tally.c parse.[ch] languages.[ch]
+tags: src/tally.c src/parse.[ch] src/languages.[ch]
 	$(CTAGS) -f $@ $^
 
 clean:
