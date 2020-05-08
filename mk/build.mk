@@ -1,58 +1,83 @@
 CC ?= gcc
 CFLAGS ?= -g -O2
 XCFLAGS = -std=c99
+GPERF = gperf
 RAGEL = ragel
 RAGEL_FLAGS = -G2
 VALGRIND ?= valgrind -q --error-exitcode=1 --leak-check=full
-NPROC = $(or $(shell sh mk/nproc.sh), 1)
 
-GPERF = gperf
+XCFLAGS += \
+    -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
+    -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
+
+rl_parser_objects := $(addprefix build/parsers/, $(addsuffix .o, \
+    c css html lisp lua meson python sql xml ))
+
+parser_objects := $(rl_parser_objects) build/parsers/plain.o build/parsers/shell.o
+gperf_objects := build/extensions.o build/filenames.o
+
+all_objects := \
+    build/tally.o build/languages.o build/parse.o \
+    $(gperf_objects) \
+    $(parser_objects)
+
+ifdef WERROR
+  XCFLAGS += -Werror
+endif
+
+# If "make install" with no other named targets
+ifeq "" "$(filter-out install,$(or $(MAKECMDGOALS),all))"
+  OPTCHECK = :
+else
+  OPTCHECK = SILENT_BUILD='$(MAKE_S)' mk/optcheck.sh
+endif
+
+ifndef NO_DEPS
+  ifneq '' '$(call cc-option,-MMD -MP -MF /dev/null)'
+    DEPFLAGS = -MMD -MP -MF $(patsubst %.o, %.mk, $@)
+  else ifneq '' '$(call cc-option,-MD -MF /dev/null)'
+    DEPFLAGS = -MD -MF $(patsubst %.o, %.mk, $@)
+  endif
+  -include $(patsubst %.o, %.mk, $(all_objects))
+endif
+
 GPERF_CFLAGS = $(shell mk/gperf-config.sh '$(GPERF)')
 $(call make-lazy,GPERF_CFLAGS)
 XCFLAGS += $(GPERF_CFLAGS)
 
-LANGS_RL = c css html lisp lua meson python sql xml
-PARSERS_RL = $(foreach L, $(LANGS_RL), build/parsers/$L.o)
-PARSERS = $(PARSERS_RL) build/parsers/plain.o build/parsers/shell.o
-HASHTABLES = build/extensions.o build/filenames.o
+$(rl_parser_objects): XCFLAGS += \
+    -Iparsers \
+    -Wno-unused-const-variable \
+    -Wno-implicit-fallthrough
 
-CWARNS = \
-    -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
-    -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
-
-ifdef WERROR
-  CWARNS += -Werror
-endif
-
-$(PARSERS_RL): XCFLAGS += -Iparsers
-$(PARSERS_RL): CWARNS += -Wno-unused-const-variable -Wno-implicit-fallthrough
-
-build/tally.o: languages.h parse.h
-build/languages.o: languages.h parse.h
-build/parse.o: parse.h
-build/parsers/plain.o build/parsers/shell.o: languages.h parse.h
-$(PARSERS_RL): languages.h parse.h parsers/prelude.h parsers/common.rl
-$(HASHTABLES): languages.h
+CFLAGS_ALL = $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
+LDFLAGS_ALL = $(CFLAGS) $(LDFLAGS) $(XLDFLAGS)
 
 all: tally
 
-tally: build/tally.o build/languages.o build/parse.o $(HASHTABLES) $(PARSERS)
+tally: $(all_objects) build/all.ldflags
 	$(E) LINK $@
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+	$(Q) $(CC) $(LDFLAGS_ALL) -o $@ $(filter %.o, $^)
 
-$(PARSERS_RL) $(HASHTABLES): build/%.o: build/%.c
+$(rl_parser_objects) $(gperf_objects): build/%.o: build/%.c build/all.cflags
 	$(E) CC $@
-	$(Q) $(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(Q) $(CC) $(CFLAGS_ALL) $(DEPFLAGS) -c -o $@ $<
 
-build/%.o: %.c | build/
+build/%.o: %.c build/all.cflags | build/
 	$(E) CC $@
-	$(Q) $(CC) $(XCFLAGS) $(CWARNS) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(Q) $(CC) $(CFLAGS_ALL) $(DEPFLAGS) -c -o $@ $<
+
+build/all.ldflags: FORCE | build/
+	@$(OPTCHECK) '$(CC) $(LDFLAGS_ALL)' $@
+
+build/all.cflags: FORCE | build/
+	@$(OPTCHECK) '$(CC) $(CFLAGS_ALL)' $@
 
 build/%.c: %.gperf | build/
 	$(E) GPERF $@
 	$(Q) $(GPERF) -L ANSI-C $< > $@
 
-build/parsers/%.c: parsers/%.rl | build/parsers/
+build/parsers/%.c: parsers/%.rl parsers/common.rl | build/parsers/
 	$(E) RAGEL $@
 	$(Q) $(RAGEL) $(RAGEL_FLAGS) -o $@ $<
 
@@ -65,7 +90,7 @@ check: all
 	$(VALGRIND) ./tally -i > /dev/null
 
 
-.PHONY: all check
+.PHONY: all check FORCE
 CLEANFILES += tally
 CLEANDIRS += build/
 NON_PARALLEL_TARGETS += clean
@@ -74,18 +99,4 @@ ifeq "" "$(filter $(NON_PARALLEL_TARGETS), $(or $(MAKECMDGOALS),all))"
   ifeq "" "$(filter -j%, $(MAKEFLAGS))"
     MAKEFLAGS += -j$(NPROC)
   endif
-endif
-
-ifneq "$(findstring s,$(firstword -$(MAKEFLAGS)))$(filter -s,$(MAKEFLAGS))" ""
-  # Make "-s" flag was used (silent build)
-  Q = @
-  E = @:
-else ifeq "$(V)" "1"
-  # "V=1" variable was set (verbose build)
-  Q =
-  E = @:
-else
-  # Normal build
-  Q = @
-  E = @printf ' %7s  %s\n'
 endif
