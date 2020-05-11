@@ -9,13 +9,12 @@ XCFLAGS += \
     -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
     -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
 
-rl_parser_objects := $(addprefix build/parsers/, $(addsuffix .o, \
-    c css html lisp lua meson plain python sql xml ))
+ragel_objects := $(addprefix build/parsers/, $(addsuffix .o, \
+    c css html lisp lua meson plain python shell sql xml ))
 
-parser_objects := $(rl_parser_objects) build/parsers/shell.o
 gperf_objects := build/extensions.o build/filenames.o
-main_objects := build/tally.o build/languages.o build/parse.o
-all_objects := $(main_objects) $(gperf_objects) $(parser_objects)
+main_objects := build/tally.o build/languages.o
+all_objects := $(main_objects) $(gperf_objects) $(ragel_objects)
 
 ifdef WERROR
   XCFLAGS += -Werror
@@ -42,7 +41,7 @@ $(call make-lazy,GPERF_CFLAGS)
 XCFLAGS += $(GPERF_CFLAGS)
 
 $(gperf_objects): XCFLAGS += -I src
-$(rl_parser_objects): XCFLAGS += -I src/parsers
+$(ragel_objects): XCFLAGS += -I src/parsers
 
 CFLAGS_ALL = $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 LDFLAGS_ALL = $(CFLAGS) $(LDFLAGS) $(XLDFLAGS)
@@ -53,7 +52,7 @@ tally: $(all_objects) build/all.ldflags
 	$(E) LINK $@
 	$(Q) $(CC) $(LDFLAGS_ALL) -o $@ $(filter %.o, $^)
 
-$(rl_parser_objects) $(gperf_objects): build/%.o: build/%.c build/all.cflags
+$(ragel_objects) $(gperf_objects): build/%.o: build/%.c build/all.cflags
 	$(E) CC $@
 	$(Q) $(CC) $(CFLAGS_ALL) $(DEPFLAGS) -c -o $@ $<
 

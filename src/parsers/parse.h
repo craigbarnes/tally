@@ -1,5 +1,5 @@
 #pragma once
-#include <stdio.h>
+#include <stddef.h>
 #include <stdint.h>
 
 typedef struct {uint64_t code, comment, blank;} LineCount;
@@ -16,7 +16,3 @@ LineCount parse_python(const char*, size_t);
 LineCount parse_shell(const char*, size_t);
 LineCount parse_sql(const char*, size_t);
 LineCount parse_xml(const char*, size_t);
-
-char *mmapfile(const char *path, size_t size);
-FILE *xfopen(const char *path);
-char first_nonspace_char(const char *str, size_t len);

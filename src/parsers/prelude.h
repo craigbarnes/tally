@@ -1,8 +1,32 @@
 #pragma once
+#include <assert.h>
+#include <fcntl.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include "parse.h"
 #include "../macros.h"
-#include "../parse.h"
+
+static inline char *mmapfile(const char *path, size_t size)
+{
+    assert(path);
+    assert(size > 0);
+    int fd = open(path, O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    char *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (addr == MAP_FAILED) {
+        perror("mmap");
+        exit(EXIT_FAILURE);
+    }
+    close(fd);
+    return addr;
+}
 
 #define init(path, size) \
     char *buffer_start = mmapfile(path, size); \
@@ -13,6 +37,8 @@
     uint64_t ncode = 0; \
     uint64_t ncomment = 0; \
     uint64_t nblank = 0; \
+    UNUSED uint64_t ncode_saved = 0; \
+    UNUSED uint64_t nblank_saved = 0; \
     char *p = buffer_start; \
     char *pe = buffer_start + size; \
     char *eof = pe; \

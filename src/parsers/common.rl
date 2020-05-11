@@ -20,6 +20,21 @@ action code {
     line_contains_code = true;
 }
 
+action block {
+    ncode_saved = ncode;
+    nblank_saved = nblank;
+    line_contains_code = true;
+}
+
+action block_end {
+    line_contains_code = true;
+}
+
+action block_eof {
+    ncode = ncode_saved + 1;
+    nblank = nblank_saved;
+}
+
 action comment {
     if (!line_contains_code) {
         whole_line_comment = true;
