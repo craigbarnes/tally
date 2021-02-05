@@ -52,6 +52,8 @@ di, D
 doap, XML
 docbook, XML
 docker, DOCKER
+dts, DEVICETREE
+dtsi, DEVICETREE
 dtx, TEX
 ebuild, SHELL
 el, EMACSLISP

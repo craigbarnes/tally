@@ -57,6 +57,7 @@ static const struct {
     [D] = {"D", parse_c},
     [DART] = {"Dart", parse_c},
     [DOCKER] = {"Dockerfile", parse_shell},
+    [DEVICETREE] = {"Device Tree", parse_c},
     [EMACSLISP] = {"Emacs Lisp", parse_lisp},
     [GLSL] = {"GLSL", parse_c},
     [GO] = {"Go", parse_c},

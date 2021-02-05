@@ -28,6 +28,7 @@ typedef enum {
     CSV,
     D,
     DART,
+    DEVICETREE,
     DOCKER,
     EMACSLISP,
     GLSL,
