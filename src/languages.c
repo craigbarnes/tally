@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "languages.h"
 
-static inline const char *file_extension(const char *const filename)
+static const char *file_extension(const char *const filename)
 {
     const char *const dot = strrchr(filename, '.');
     if(!dot || dot == filename) {
