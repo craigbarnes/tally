@@ -8,7 +8,7 @@ Requirements
 
 * C99 compiler
 * [GNU Make] 3.81+
-* [GNU gperf]
+* [GNU gperf] 3.1+
 * [Ragel]
 
 **Note:** Tally currently only works with GNU libc. This is only for

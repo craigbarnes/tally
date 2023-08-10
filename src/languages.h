@@ -1,10 +1,6 @@
 #pragma once
 #include "parsers/parse.h"
 
-#ifndef LENGTH_TYPE
-#define LENGTH_TYPE size_t
-#endif
-
 typedef enum {
     UNKNOWN = 0,
     IGNORED,
@@ -86,6 +82,6 @@ typedef struct {
     Language language;
 } LanguageHashSlot;
 
-const LanguageHashSlot *lookup_language_by_extension(const char*, LENGTH_TYPE);
-const LanguageHashSlot *lookup_language_by_filename(const char*, LENGTH_TYPE);
+const LanguageHashSlot *lookup_language_by_extension(const char*, size_t);
+const LanguageHashSlot *lookup_language_by_filename(const char*, size_t);
 Language detect_language(const char *path, int base, int level, size_t size);

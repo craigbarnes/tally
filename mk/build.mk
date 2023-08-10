@@ -36,10 +36,6 @@ ifndef NO_DEPS
   -include $(patsubst %.o, %.mk, $(all_objects))
 endif
 
-GPERF_CFLAGS = $(shell mk/gperf-config.sh '$(GPERF)')
-$(call make-lazy,GPERF_CFLAGS)
-XCFLAGS += $(GPERF_CFLAGS)
-
 $(gperf_objects): XCFLAGS += -I src
 $(ragel_objects): XCFLAGS += -I src/parsers
 
