@@ -1,5 +1,6 @@
+CFILE := mk/basic.c
 try-run = $(if $(shell $(1) >/dev/null 2>&1 && echo 1),$(2),$(3))
-cc-option = $(call try-run,$(CC) $(1) -Werror -c -o /dev/null mk/x.c,$(1),$(2))
+cc-option = $(call try-run,$(CC) $(1) -Werror -c -o /dev/null $(CFILE),$(1),$(2))
 
 MAKEFLAGS += -r
 NPROC = $(or $(shell sh mk/nproc.sh), 1)
