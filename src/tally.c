@@ -23,12 +23,23 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <locale.h>
+#include "exitcode.h"
 #include "languages.h"
 
 #define COL " %'10" PRIu64
 
-static LineCount line_counts[NUM_LANGUAGES] = {{0, 0, 0}};
-static uint64_t file_counts[NUM_LANGUAGES] = {0};
+typedef struct {
+    Language lang;
+    uint64_t files;
+    uint64_t code;
+    uint64_t comment;
+    uint64_t blank;
+} FileAndLineCount;
+
+static FileAndLineCount counts[NUM_LANGUAGES];
+static const char *bold = "";
+static const char *dim = "";
+static const char *reset = "";
 
 static const struct {
     const char name[16];
@@ -132,11 +143,11 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w)
 {
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
-        file_counts[lang] += 1;
+        FileAndLineCount *count = &counts[lang];
         Parser parser = languages[lang].parser;
-        if (parser != NULL) {
+        count->files++;
+        if (parser) {
             LineCount c = parser(f, s->st_size);
-            LineCount *count = &line_counts[lang];
             count->code += c.code;
             count->comment += c.comment;
             count->blank += c.blank;
@@ -153,7 +164,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         Parser parser = languages[lang].parser;
-        if (parser != NULL) {
+        if (parser) {
             const char *name = languages[lang].name;
             LineCount c = parser(f, s->st_size);
             printf("%'8" PRIu64 "  %-12s %s\n", c.code, name, f);
@@ -167,14 +178,97 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
 
 static int compare(const void *p1, const void *p2)
 {
-    const Language l1 = *(const Language*)p1, l2 = *(const Language*)p2;
-    const uint64_t c1 = (&line_counts[l1])->code, c2 = (&line_counts[l2])->code;
-    if (c1 == c2) {
+    const FileAndLineCount *c1 = p1;
+    const FileAndLineCount *c2 = p2;
+    const uint64_t n1 = c1->code;
+    const uint64_t n2 = c2->code;
+    if (n1 == n2) {
         return 0;
-    } else if (c1 > c2) {
+    } else if (n1 > n2) {
         return -1;
     } else {
         return 1;
+    }
+}
+
+static void print_summary(void)
+{
+    FileAndLineCount total = {0};
+    uint64_t total_lines = 0;
+    unsigned int nlangs = 0;
+
+    for (Language lang = 2; lang < NUM_LANGUAGES; lang++) {
+        FileAndLineCount *c = &counts[lang];
+
+        // The array indices no longer correspond to Language enum
+        // values after sorting, so each entry must be tagged such
+        // that the name can be looked up by the loop futher below
+        c->lang = lang;
+
+        if (c->files == 0) {
+            continue;
+        }
+
+        nlangs++;
+        total.files += c->files;
+        total.code += c->code;
+        total.comment += c->comment;
+        total.blank += c->blank;
+        total_lines += c->code + c->comment + c->blank;
+    }
+
+    if (nlangs == 0) {
+        fputs("Nothing found\n", stderr);
+        return;
+    }
+
+    qsort(counts + 2, NUM_LANGUAGES - 2, sizeof(FileAndLineCount), compare);
+
+    printf (
+        "%s%-15s %10s %10s %10s %10s %10s%s\n",
+        bold, "Language", "Files", "Code", "Comment", "Blank", "Lines", reset
+    );
+
+    for (size_t i = 2; i < NUM_LANGUAGES; i++) {
+        const FileAndLineCount *c = &counts[i];
+        if (c->files == 0) {
+            continue;
+        }
+        const char *name = languages[c->lang].name;
+        uint64_t lines = c->code + c->comment + c->blank;
+        printf (
+            "%-15s" COL COL COL COL COL "\n",
+            name, c->files, c->code, c->comment, c->blank, lines
+        );
+    }
+
+    if (nlangs > 1) {
+        printf (
+            "%s%-15s" COL COL COL COL COL "%s\n",
+            bold, "Total:",
+            total.files,
+            total.code,
+            total.comment,
+            total.blank,
+            total_lines,
+            reset
+        );
+    }
+
+    uint64_t unknown = counts[UNKNOWN].files;
+    if (unknown > 0) {
+        printf (
+            "%s%-15s" COL "%s\n",
+            dim, "Unrecognized", unknown, reset
+        );
+    }
+
+    uint64_t ignored = counts[IGNORED].files;
+    if (ignored > 0) {
+        printf (
+            "%s%-15s" COL "%s\n",
+            dim, "Ignored", ignored, reset
+        );
     }
 }
 
@@ -196,125 +290,60 @@ int main(int argc, char *argv[])
         switch (opt) {
         case 'd':
             cb = detect;
-            break;
+            continue;
         case 's':
             cb = summary;
-            break;
+            continue;
         case 'i':
-            if (isatty(STDOUT_FILENO)) {
-                printf("\033[1m%8s  %-12s File\033[0m\n", "SLOC", "Language");
-            } else {
-                printf("%8s  %-12s File\n", "SLOC", "Language");
-            }
             cb = perfile;
-            break;
+            continue;
         case 'h':
             puts(help);
-            exit(EXIT_SUCCESS);
+            return EX_OK;
         case '?':
-            exit(EXIT_FAILURE);
+            return EX_USAGE;
         default:
             fprintf(stderr, "Error: unhandled option: -%c\n", opt);
-            exit(EXIT_FAILURE);
+            return EX_SOFTWARE;
         }
     }
 
     for (int i = optind; i < argc; i++) {
-        const char *const path = argv[i];
+        const char *path = argv[i];
         if (access(path, R_OK) != 0) {
             perror(path);
-            exit(EXIT_FAILURE);
+            return EX_NOINPUT;
         }
     }
 
+    if (isatty(STDOUT_FILENO)) {
+        bold = "\033[1m";
+        dim = "\033[2m";
+        reset = "\033[0m";
+    }
+
+    if (cb == perfile) {
+        printf("%s%8s  %-12s File%s\n", bold, "SLOC", "Language", reset);
+    }
+
     for (int i = optind; i < argc; i++) {
-        const char *const path = argv[i];
+        const char *path = argv[i];
         if (nftw(path, cb, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
             perror("nftw");
-            exit(EXIT_FAILURE);
+            return EX_IOERR;
         }
     }
 
     if (optind == argc) {
         if (nftw(".", cb, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
             perror("nftw");
-            exit(EXIT_FAILURE);
+            return EX_IOERR;
         }
     }
 
     if (cb == summary) {
-        Language index[NUM_LANGUAGES];
-        size_t n = 0;
-        uint64_t tfiles = 0, tcode = 0, tcomment = 0, tblank = 0;
-
-        for (Language lang = 2; lang < NUM_LANGUAGES; lang++) {
-            if (file_counts[lang] > 0ULL) {
-                index[n++] = lang;
-                tfiles += file_counts[lang];
-            }
-        }
-
-        if (n == 0) {
-            fputs("Nothing found\n", stderr);
-            exit(EXIT_SUCCESS);
-        }
-
-        static const char *const fmt_row = "%-15s" COL COL COL COL "\n";
-        static const char *bold = "";
-        static const char *dim = "";
-        static const char *reset = "";
-
-        if (isatty(STDOUT_FILENO)) {
-            bold = "\033[1m";
-            dim = "\033[2m";
-            reset = "\033[0m";
-        }
-
-        printf (
-            "%s%-15s %10s %10s %10s %10s%s\n",
-            bold, "Language", "Files", "Code", "Comment", "Blank", reset
-        );
-
-        if (n == 1) {
-            const Language lang = index[0];
-            const char *const name = languages[lang].name;
-            const uint64_t nfiles = file_counts[lang];
-            const LineCount *const c = &line_counts[lang];
-            printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
-            exit(EXIT_SUCCESS);
-        }
-
-        qsort(index, n, sizeof(Language), compare);
-        for (size_t i = 0; i < n; i++) {
-            const Language lang = index[i];
-            const char *const name = languages[lang].name;
-            const uint64_t nfiles = file_counts[lang];
-            const LineCount *const c = &line_counts[lang];
-            printf(fmt_row, name, nfiles, c->code, c->comment, c->blank);
-            tcode += c->code;
-            tcomment += c->comment;
-            tblank += c->blank;
-        }
-
-        printf (
-            "%s%-15s" COL COL COL COL "%s\n",
-            bold, "Total:", tfiles, tcode, tcomment, tblank, reset
-        );
-
-        if (file_counts[UNKNOWN] > 0ULL) {
-            printf (
-                "%s%-15s" COL "%s\n",
-                dim, "Unrecognized", file_counts[UNKNOWN], reset
-            );
-        }
-
-        if (file_counts[IGNORED] > 0ULL) {
-            printf (
-                "%s%-15s" COL "%s\n",
-                dim, "Ignored", file_counts[IGNORED], reset
-            );
-        }
+        print_summary();
     }
 
-    exit(EXIT_SUCCESS);
+    return EX_OK;
 }
