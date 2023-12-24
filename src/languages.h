@@ -14,6 +14,7 @@ typedef enum {
     CHEADER,
     CLOJURE,
     CMAKE,
+    COCCINELLE,
     COFFEESCRIPT,
     COMMONLISP,
     CPLUSPLUS,

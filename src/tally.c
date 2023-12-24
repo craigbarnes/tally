@@ -46,6 +46,7 @@ static const struct {
     [CHEADER] = {"C Header", parse_c},
     [CLOJURE] = {"Clojure", parse_lisp},
     [CMAKE] = {"CMake", parse_shell},
+    [COCCINELLE] = {"Coccinelle", parse_c},
     [COFFEESCRIPT] = {"CoffeScript", parse_shell},
     [COMMONLISP] = {"Common Lisp", parse_lisp},
     [CPLUSPLUS] = {"C++", parse_c},

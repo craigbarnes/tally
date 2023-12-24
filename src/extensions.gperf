@@ -37,6 +37,7 @@ clj, CLOJURE
 cls, TEX
 cmake, CMAKE
 cmd, BATCHFILE
+cocci, COCCINELLE
 coffee, COFFEESCRIPT
 cpp, CPLUSPLUS
 cr, CRYSTAL
