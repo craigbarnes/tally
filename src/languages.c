@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include "languages.h"
 
-static const char *file_extension(const char *const filename)
+static const char *file_extension(const char *filename)
 {
-    const char *const dot = strrchr(filename, '.');
+    const char *dot = strrchr(filename, '.');
     if(!dot || dot == filename) {
         return NULL;
     }
@@ -18,13 +18,12 @@ Language detect_language(const char *path, int base, int level, size_t size)
         return IGNORED;
     }
 
-    const char *const basename = path + base;
-
+    const char *basename = path + base;
     if (basename[0] == '.' && level > 0) {
         return IGNORED;
     }
 
-    const char *const ext = file_extension(basename);
+    const char *ext = file_extension(basename);
     const LanguageHashSlot *slot = NULL;
 
     if (ext && (slot = lookup_language_by_extension(ext, strlen(ext)))) {

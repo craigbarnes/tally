@@ -4,7 +4,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct {uint64_t code, comment, blank;} LineCount;
+typedef struct {
+    uint64_t code;
+    uint64_t comment;
+    uint64_t blank;
+} LineCount;
+
 typedef LineCount (*Parser)(const char*, size_t);
 
 LineCount parse_c(const char*, size_t);

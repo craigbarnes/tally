@@ -154,7 +154,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         Parser parser = languages[lang].parser;
         if (parser != NULL) {
-            const char *const name = languages[lang].name;
+            const char *name = languages[lang].name;
             LineCount c = parser(f, s->st_size);
             printf("%'8" PRIu64 "  %-12s %s\n", c.code, name, f);
         }
