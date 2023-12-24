@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARSERS_PARSE_H
+#define PARSERS_PARSE_H
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,3 +18,5 @@ LineCount parse_python(const char*, size_t);
 LineCount parse_shell(const char*, size_t);
 LineCount parse_sql(const char*, size_t);
 LineCount parse_xml(const char*, size_t);
+
+#endif

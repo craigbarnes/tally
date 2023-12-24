@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARSERS_PRELUDE_H
+#define PARSERS_PRELUDE_H
+
 #include <assert.h>
 #include <fcntl.h>
 #include <stdbool.h>
@@ -60,3 +62,5 @@ static inline char *mmapfile(const char *path, size_t size)
 
 DISABLE_WARNING("-Wimplicit-fallthrough")
 DISABLE_WARNING("-Wunused-const-variable")
+
+#endif
