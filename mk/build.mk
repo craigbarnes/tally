@@ -20,11 +20,12 @@ ifdef WERROR
   XCFLAGS += -Werror
 endif
 
-# If "make install" with no other named targets
-ifeq "" "$(filter-out install,$(or $(MAKECMDGOALS),all))"
-  OPTCHECK = :
-else
-  OPTCHECK = SILENT_BUILD='$(MAKE_S)' mk/optcheck.sh
+OPTCHECK = mk/optcheck.sh $(if $(MAKE_S),-s)
+
+# If "make install*" with no other named targets
+ifeq "" "$(filter-out install%,$(or $(MAKECMDGOALS),all))"
+  # Only generate files with $(OPTCHECK) if they don't already exist
+  OPTCHECK += -R
 endif
 
 ifndef NO_DEPS

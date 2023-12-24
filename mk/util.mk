@@ -3,18 +3,20 @@ cc-option = $(call try-run,$(CC) $(1) -Werror -c -o /dev/null mk/x.c,$(1),$(2))
 
 MAKEFLAGS += -r
 NPROC = $(or $(shell sh mk/nproc.sh), 1)
-MAKE_S = $(findstring s,$(firstword -$(MAKEFLAGS)))$(filter -s,$(MAKEFLAGS))
+MAKE_S = $(findstring s,$(firstword -$(MAKEFLAGS)))
 
 ifneq "$(MAKE_S)" ""
   # Make "-s" flag was used (silent build)
+  LOG = :
   Q = @
-  E = @:
 else ifeq "$(V)" "1"
   # "V=1" variable was set (verbose build)
+  LOG = :
   Q =
-  E = @:
 else
   # Normal build
+  LOG = printf ' %7s  %s\n'
   Q = @
-  E = @printf ' %7s  %s\n'
 endif
+
+E = @$(LOG)
