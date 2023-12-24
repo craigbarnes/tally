@@ -6,12 +6,14 @@ RAGEL = ragel
 RAGEL_FLAGS = -G2
 
 XCFLAGS += \
-    -Wall -Wextra -Wformat=2 -Wmissing-prototypes \
-    -Wold-style-definition -Wwrite-strings -Wundef -Wshadow
+    -Wall -Wextra -Wformat=2 -Wmissing-prototypes -Wstrict-prototypes \
+    -Wold-style-definition -Wwrite-strings -Wundef -Wshadow -Wvla \
+    -Wcast-align -Wredundant-decls -Wswitch-enum -Wpointer-arith \
+    -Wnested-externs -Winit-self -Werror=div-by-zero \
+    -Werror=implicit-function-declaration
 
-ragel_objects := $(addprefix build/parsers/, $(addsuffix .o, \
-    c css html lisp lua meson plain python shell sql xml ))
-
+parsers = c css html lisp lua meson plain python shell sql xml
+ragel_objects := $(foreach p, $(parsers), build/parsers/$(p).o)
 gperf_objects := build/extensions.o build/filenames.o
 main_objects := build/tally.o build/languages.o
 all_objects := $(main_objects) $(gperf_objects) $(ragel_objects)
