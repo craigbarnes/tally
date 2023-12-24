@@ -109,13 +109,18 @@ static const struct {
     [YAML] = {"YAML", parse_shell},
 };
 
+static bool is_ignored_dir(const char *name, int type, int level)
+{
+    return type == FTW_D && level > 0 && name[0] == '.';
+}
+
 static int detect(const char *f, const struct stat *s, int t, struct FTW *w)
 {
     if (t == FTW_F) {
         Language lang = detect_language(f, w->base, w->level, s->st_size);
         bool dotslash = f[0] == '.' && f[1] == '/';
         printf("%12s  %s\n", languages[lang].name, dotslash? f+2 : f);
-    } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
+    } else if (is_ignored_dir(f + w->base, t, w->level)) {
         return FTW_SKIP_SUBTREE;
     }
 
@@ -135,7 +140,7 @@ static int summary(const char *f, const struct stat *s, int t, struct FTW *w)
             count->comment += c.comment;
             count->blank += c.blank;
         }
-    } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
+    } else if (is_ignored_dir(f + w->base, t, w->level)) {
         return FTW_SKIP_SUBTREE;
     }
 
@@ -152,7 +157,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
             LineCount c = parser(f, s->st_size);
             printf("%'8" PRIu64 "  %-12s %s\n", c.code, name, f);
         }
-    } else if (t == FTW_D && (f + w->base)[0] == '.' && w->level > 0) {
+    } else if (is_ignored_dir(f + w->base, t, w->level)) {
         return FTW_SKIP_SUBTREE;
     }
 
