@@ -1,11 +1,10 @@
 CC ?= gcc
 CFLAGS ?= -g -O2
-XCFLAGS = -std=c99
 GPERF = gperf
 RAGEL = ragel
 RAGEL_FLAGS = -G2
 
-XCFLAGS += \
+WARNINGS = \
     -Wall -Wextra -Wformat=2 -Wmissing-prototypes -Wstrict-prototypes \
     -Wold-style-definition -Wwrite-strings -Wundef -Wshadow -Wvla \
     -Wcast-align -Wredundant-decls -Wswitch-enum -Wpointer-arith \
@@ -18,10 +17,11 @@ gperf_objects := build/extensions.o build/filenames.o
 main_objects := build/tally.o build/languages.o
 all_objects := $(main_objects) $(gperf_objects) $(ragel_objects)
 
-ifdef WERROR
-  XCFLAGS += -Werror
+ifeq "$(WERROR)" "1"
+  WARNINGS += -Werror
 endif
 
+XCFLAGS = -std=gnu99 $(WARNINGS)
 OPTCHECK = mk/optcheck.sh $(if $(MAKE_S),-s)
 
 # If "make install*" with no other named targets
