@@ -62,11 +62,14 @@ build/all.ldflags: FORCE | build/
 build/all.cflags: FORCE | build/
 	@$(OPTCHECK) '$(CC) $(CFLAGS_ALL)' $@
 
+build/all.ragelflags: FORCE | build/
+	@$(OPTCHECK) '$(RAGEL) $(RAGEL_FLAGS)' $@
+
 build/%.c: src/%.gperf | build/
 	$(E) GPERF $@
 	$(Q) $(GPERF) -L ANSI-C $< > $@
 
-build/parsers/%.c: src/parsers/%.rl src/parsers/common.rl | build/parsers/
+build/parsers/%.c: src/parsers/%.rl src/parsers/common.rl build/all.ragelflags | build/parsers/
 	$(E) RAGEL $@
 	$(Q) $(RAGEL) $(RAGEL_FLAGS) -o $@ $<
 
