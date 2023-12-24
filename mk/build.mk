@@ -39,10 +39,10 @@ ifndef NO_DEPS
   -include $(patsubst %.o, %.mk, $(all_objects))
 endif
 
-$(gperf_objects): XCFLAGS += -I src
-$(ragel_objects): XCFLAGS += -I src/parsers
+$(gperf_objects): XCPPFLAGS += -I src
+$(ragel_objects): XCPPFLAGS += -I src/parsers
 
-CFLAGS_ALL = $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
+CFLAGS_ALL = $(CPPFLAGS) $(CFLAGS) $(XCPPFLAGS) $(XCFLAGS)
 LDFLAGS_ALL = $(CFLAGS) $(LDFLAGS) $(XLDFLAGS)
 
 all: tally
