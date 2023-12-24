@@ -86,6 +86,7 @@ static const struct {
     [PROTOBUF] = {"Protobuf", parse_c},
     [PYTHON] = {"Python", parse_python},
     [RACKET] = {"Racket", parse_lisp},
+    [RAGEL] = {"Ragel", parse_c},
     [RESTRUCTUREDTEXT] = {"reST", parse_plain},
     [RUBY] = {"Ruby", parse_shell},
     [RUST] = {"Rust", parse_c},

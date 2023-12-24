@@ -56,6 +56,7 @@ typedef enum {
     PROTOBUF,
     PYTHON,
     RACKET,
+    RAGEL,
     RESTRUCTUREDTEXT,
     RUBY,
     RUST,

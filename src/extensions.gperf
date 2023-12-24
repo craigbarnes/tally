@@ -121,6 +121,7 @@ rdf, XML
 rktd, RACKET
 rktl, RACKET
 rkt, RACKET
+rl, RAGEL
 rockspec, LUA
 rs, RUST
 rst, RESTRUCTUREDTEXT
