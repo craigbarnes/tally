@@ -6,14 +6,8 @@ test:debian:
         - make check CC="ccache ${CC:-gcc}"
         - make install
         - tally
-
         - make CC='ccache gcc'
-        - make CC='ccache clang'
-        - make CC='ccache arm-linux-gnueabihf-gcc'
-        - make CC='ccache aarch64-linux-gnu-gcc'
-
-        - export LDFLAGS=-static
-        - make CC='ccache gcc'
+        - make CC='ccache gcc' LDFLAGS=-static
         - make CC='ccache clang'
         - make CC='ccache arm-linux-gnueabihf-gcc'
         - make CC='ccache aarch64-linux-gnu-gcc'
