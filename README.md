@@ -7,7 +7,7 @@ Requirements
 ------------
 
 * C99 compiler
-* [GNU Make] 3.81+
+* [GNU Make] 4.0+
 * [GNU gperf] 3.1+
 * [Ragel]
 
@@ -18,12 +18,14 @@ portable to any [POSIX.1-2008] compliant OS.
 Installation
 ------------
 
-    make -j8 && sudo make install
+    git clone https://gitlab.com/craigbarnes/tally.git
+    cd tally
+    make && sudo make install
 
 License
 -------
 
-Copyright (C) 2014-2023 Craig Barnes
+Copyright (C) 2014-2024 Craig Barnes
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU [General Public License version 2] as published

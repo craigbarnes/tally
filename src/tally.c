@@ -1,6 +1,6 @@
 /*
  Tally: a simple, command-line SLOC counter.
- Copyright (C) 2014-2021 Craig Barnes.
+ Copyright (C) 2014-2024 Craig Barnes.
 
  This program is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by the
