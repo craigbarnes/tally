@@ -37,8 +37,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 Public License version 2 for more details.
 
 
-[General Public License version 2]: https://www.gnu.org/licenses/gpl-2.0.html
+[General Public License version 2]: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 [GNU Make]: https://www.gnu.org/software/make/
 [GNU gperf]: https://www.gnu.org/software/gperf/
 [Ragel]: https://www.colm.net/open-source/ragel/
-[POSIX.1-2008]: http://pubs.opengroup.org/onlinepubs/9699919799/
+[POSIX.1-2008]: https://pubs.opengroup.org/onlinepubs/9699919799/
