@@ -1,6 +1,6 @@
-test:debian:
+test:
     stage: test
-    image: registry.gitlab.com/craigbarnes/dockerfiles/cdev-debian-12
+    image: registry.gitlab.com/craigbarnes/dockerfiles/cdev-debian
     script:
         - export MAKEFLAGS="-j$(mk/nproc.sh)" WERROR=1 V=1
         - make check CC="ccache ${CC:-gcc}"
