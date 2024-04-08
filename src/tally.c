@@ -167,7 +167,7 @@ static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
         if (parser) {
             const char *name = languages[lang].name;
             LineCount c = parser(f, s->st_size);
-            printf("%'8" PRIu64 "  %-12s %s\n", c.code, name, f);
+            printf("%'8ju  %-12s %s\n", (uintmax_t)c.code, name, f);
         }
     } else if (is_ignored_dir(f + w->base, t, w->level)) {
         return FTW_SKIP_SUBTREE;
