@@ -78,6 +78,7 @@ typedef enum {
     XML,
     YACC,
     YAML,
+    ZIG,
     NUM_LANGUAGES
 } Language;
 

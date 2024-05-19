@@ -29,6 +29,7 @@ Makefile, MAKE
 makefile, MAKE
 GNUmakefile, MAKE
 BSDMakefile, MAKE
+Kbuild, MAKE
 vimrc, VIML
 .vimrc, VIML
 gvimrc, VIML
@@ -38,10 +39,13 @@ emacs, EMACSLISP
 Rakefile, RUBY
 rakefile, RUBY
 Gemfile, RUBY
+Gemfile.lock, RUBY
 Capfile, RUBY
 Vagrantfile, RUBY
 meson.build, MESON
 Dockerfile, DOCKER
 #
+a.out, IGNORED
+robots.txt, IGNORED
 tags, IGNORED
 TAGS, IGNORED

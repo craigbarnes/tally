@@ -119,6 +119,7 @@ static const struct {
     [XML] = {"XML", parse_xml},
     [YACC] = {"YACC", parse_c},
     [YAML] = {"YAML", parse_shell},
+    [ZIG] = {"Zig", parse_c}, // TODO: Zig-specific parser (no long comments)
 };
 
 static bool is_ignored_dir(const char *name, int type, int level)
