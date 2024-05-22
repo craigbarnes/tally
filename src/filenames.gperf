@@ -23,6 +23,7 @@ bash_logout, SHELL
 PKGBUILD, SHELL
 APKBUILD, SHELL
 CMakeLists.txt, CMAKE
+configure.ac, M4
 .luacheckrc, LUA
 .luacov, LUA
 Makefile, MAKE

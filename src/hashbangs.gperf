@@ -23,10 +23,12 @@ ccl, COMMONLISP
 chicken, SCHEME
 clisp, COMMONLISP
 coffee, COFFEESCRIPT
+crystal, CRYSTAL
 dart, DART
 dash, SHELL
 deno, TYPESCRIPT
 ecl, COMMONLISP
+fish, FISH
 gawk, AWK
 gjs, JAVASCRIPT
 gmake, MAKE

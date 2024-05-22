@@ -71,6 +71,8 @@ static const struct {
     [DOCKER] = {"Dockerfile", parse_shell},
     [DEVICETREE] = {"Device Tree", parse_c},
     [EMACSLISP] = {"Emacs Lisp", parse_lisp},
+    [FISH] = {"fish", parse_shell},
+    [GDSCRIPT] = {"GDScript", parse_python},
     [GLSL] = {"GLSL", parse_c},
     [GO] = {"Go", parse_c},
     [GPERF] = {"gperf", parse_plain},
@@ -81,6 +83,7 @@ static const struct {
     [JAVA] = {"Java", parse_c},
     [JAVASCRIPT] = {"JavaScript", parse_c},
     [JSON] = {"JSON", parse_plain},
+    [KOTLIN] = {"Kotlin", parse_c},
     [LEX] = {"Lex", parse_c},
     [LUA] = {"Lua", parse_lua},
     [M4] = {"M4", parse_plain},
@@ -91,6 +94,7 @@ static const struct {
     [MOONSCRIPT] = {"MoonScript", parse_plain}, // TODO: comment-aware parser
     [NGINX] = {"Nginx config", parse_shell},
     [OBJECTIVEC] = {"Objective-C", parse_c},
+    [ODIN] = {"Odin", parse_c},
     [PERL] = {"Perl", parse_shell},
     [PHP] = {"PHP", parse_c},
     [PKGCONFIG] = {"pkg-config", parse_shell},
@@ -107,10 +111,13 @@ static const struct {
     [SED] = {"SED", parse_shell},
     [SHELL] = {"Shell", parse_shell},
     [SQL] = {"SQL", parse_sql},
+    [SWIFT] = {"Swift", parse_c}, // TODO: support nested long comments
     [TCL] = {"TCL", parse_shell},
     [TEXINFO] = {"Texinfo", parse_plain},
     [TEX] = {"TeX", parse_plain}, // TODO: comment-aware parser
+    [TLVERILOG] = {"TL-Verilog", parse_c},
     [TOML] = {"TOML", parse_shell},
+    [TSV] = {"TSV", parse_plain},
     [TYPESCRIPT] = {"TypeScript", parse_c},
     [VALA] = {"Vala", parse_c},
     [VERILOG] = {"Verilog", parse_c},
