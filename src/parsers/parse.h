@@ -13,6 +13,7 @@ typedef struct {
 typedef LineCount (*Parser)(const char*, size_t);
 
 LineCount parse_c(const char*, size_t);
+LineCount parse_config(const char*, size_t);
 LineCount parse_css(const char*, size_t);
 LineCount parse_html(const char*, size_t);
 LineCount parse_lisp(const char*, size_t);

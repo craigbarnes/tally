@@ -42,6 +42,7 @@ typedef enum {
     JAVA,
     JAVASCRIPT,
     JSON,
+    KCONFIG,
     KOTLIN,
     LEX,
     LUA,

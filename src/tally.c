@@ -83,6 +83,7 @@ static const struct {
     [JAVA] = {"Java", parse_c},
     [JAVASCRIPT] = {"JavaScript", parse_c},
     [JSON] = {"JSON", parse_plain},
+    [KCONFIG] = {"Kconfig", parse_config},
     [KOTLIN] = {"Kotlin", parse_c},
     [LEX] = {"Lex", parse_c},
     [LUA] = {"Lua", parse_lua},

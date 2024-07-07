@@ -31,6 +31,9 @@ makefile, MAKE
 GNUmakefile, MAKE
 BSDMakefile, MAKE
 Kbuild, MAKE
+# TODO: Also handle Kconfig.* filenames (as used in the Linux tree),
+# for example Kconfig.debug, Kconfig.cpu, etc.
+Kconfig, KCONFIG
 vimrc, VIML
 .vimrc, VIML
 gvimrc, VIML

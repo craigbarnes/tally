@@ -11,7 +11,7 @@ WARNINGS = \
     -Wnested-externs -Winit-self -Werror=div-by-zero \
     -Werror=implicit-function-declaration
 
-parsers = c css html lisp lua meson plain python shell sql xml
+parsers = c config css html lisp lua meson plain python shell sql xml
 ragel_objects := $(foreach p, $(parsers), build/parsers/$(p).o)
 gperf_objects := build/extensions.o build/filenames.o
 main_objects := build/tally.o build/languages.o
