@@ -30,13 +30,12 @@
 
 }%%
 
-LineCount parse_sql(const char *path, size_t size)
+LineCount parse_sql(const char *text, size_t size)
 {
-    init(path, size);
+    init(text, size);
     %% write init;
     cs = sql_en_line;
     %% write exec;
     process_last_line();
-    deinit();
     return (LineCount){.code = ncode, .comment = ncomment, .blank = nblank};
 }

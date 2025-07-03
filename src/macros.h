@@ -6,11 +6,10 @@
 #endif
 
 #define DO_PRAGMA(x) _Pragma(#x)
-
-#define VERCMP(x, y, cx, cy) ((cx > x) || ((cx == x) && (cy >= y)))
+#define VERSION_GE(L, l, R, r) ((L > R) || ((L == R) && (l >= r)))
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-    #define GNUC_AT_LEAST(x, y) VERCMP(x, y, __GNUC__, __GNUC_MINOR__)
+    #define GNUC_AT_LEAST(x, y) VERSION_GE(__GNUC__, __GNUC_MINOR__, x, y)
 #else
     #define GNUC_AT_LEAST(x, y) 0
 #endif
@@ -81,8 +80,18 @@
     #define noreturn
 #endif
 
-#if (__STDC_VERSION__ >= 201112L) || HAS_EXTENSION(c_static_assert)
+#if __STDC_VERSION__ >= 202311L
+    // static_assert is a standard keyword in ISO C23 (§6.4.1) and the
+    // second argument is optional (§6.7.11)
+#elif __STDC_VERSION__ >= 201112L
+    // ISO C11 provides _Static_assert (§6.4.1), with a mandatory second
+    // argument (§6.7.10)
     #define static_assert(x) _Static_assert((x), #x)
+#elif GNUC_AT_LEAST(4, 6) || HAS_EXTENSION(c_static_assert)
+    // GCC 4.6+ and Clang allow _Static_assert (as a language extension),
+    // even in pre-C11 standards modes:
+    // https://clang.llvm.org/docs/LanguageExtensions.html#c11-static-assert
+    #define static_assert(x) __extension__ _Static_assert((x), #x)
 #else
     #define static_assert(x)
 #endif

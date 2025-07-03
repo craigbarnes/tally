@@ -1,6 +1,6 @@
 /*
  Tally: a simple, command-line SLOC counter.
- Copyright (C) 2014-2024 Craig Barnes.
+ Copyright (C) 2014-2025 Craig Barnes.
 
  This program is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by the
@@ -13,20 +13,28 @@
  Public License for more details.
 */
 
-#define _XOPEN_SOURCE 500 // For nftw(3)
 #define _GNU_SOURCE // For FTW_ACTIONRETVAL
+#include <errno.h>
+#include <fcntl.h>
 #include <ftw.h>
+#include <inttypes.h>
+#include <locale.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
+#include <sys/mman.h>
 #include <unistd.h>
-#include <getopt.h>
-#include <locale.h>
 #include "exitcode.h"
 #include "languages.h"
+#include "macros.h"
 
 #define COL " %'10" PRIu64
+
+typedef enum {
+    OFLAG_PER_FILE = 1 << 0,
+    OFLAG_TOTALS = 1 << 1,
+    OFLAG_SHOW_UNKNOWN = 1 << 2,
+} OutputFlags;
 
 typedef struct {
     Language lang;
@@ -37,6 +45,7 @@ typedef struct {
 } FileAndLineCount;
 
 static FileAndLineCount counts[NUM_LANGUAGES];
+static OutputFlags outflags = 0;
 static const char *bold = "";
 static const char *dim = "";
 static const char *reset = "";
@@ -58,7 +67,7 @@ static const struct {
     [CLOJURE] = {"Clojure", parse_lisp},
     [CMAKE] = {"CMake", parse_shell},
     [COCCINELLE] = {"Coccinelle", parse_c},
-    [COFFEESCRIPT] = {"CoffeScript", parse_shell},
+    [COFFEESCRIPT] = {"CoffeeScript", parse_shell},
     [COMMONLISP] = {"Common Lisp", parse_lisp},
     [CPLUSPLUS] = {"C++", parse_c},
     [CPLUSPLUSHEADER] = {"C++ Header", parse_c},
@@ -130,56 +139,88 @@ static const struct {
     [ZIG] = {"Zig", parse_c}, // TODO: Zig-specific parser (no long comments)
 };
 
-static bool is_ignored_dir(const char *name, int type, int level)
+static bool is_ignored_dir(const char *path, const struct FTW *w)
 {
-    return type == FTW_D && level > 0 && name[0] == '.';
+    const char *base = path + w->base;
+    return w->level > 0 && base[0] == '.';
 }
 
-static int detect(const char *f, const struct stat *s, int t, struct FTW *w)
+// Remove the leading "./" prefix that nftw(3) includes in some paths
+static const char *clean_path(const char *path)
 {
-    if (t == FTW_F) {
-        Language lang = detect_language(f, w->base, w->level, s->st_size);
-        bool dotslash = f[0] == '.' && f[1] == '/';
-        printf("%12s  %s\n", languages[lang].name, dotslash? f+2 : f);
-    } else if (is_ignored_dir(f + w->base, t, w->level)) {
-        return FTW_SKIP_SUBTREE;
+    return (path[0] == '.' && path[1] == '/') ? path + 2 : path;
+}
+
+static char *mmapfile(const char *path, size_t size)
+{
+    int fd = open(path, O_RDONLY);
+    if (fd < 0) {
+        perror("open");
+        return NULL;
     }
 
-    return FTW_CONTINUE;
-}
-
-static int summary(const char *f, const struct stat *s, int t, struct FTW *w)
-{
-    if (t == FTW_F) {
-        Language lang = detect_language(f, w->base, w->level, s->st_size);
-        FileAndLineCount *count = &counts[lang];
-        Parser parser = languages[lang].parser;
-        count->files++;
-        if (parser) {
-            LineCount c = parser(f, s->st_size);
-            count->code += c.code;
-            count->comment += c.comment;
-            count->blank += c.blank;
-        }
-    } else if (is_ignored_dir(f + w->base, t, w->level)) {
-        return FTW_SKIP_SUBTREE;
+    char *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+    bool mmap_failed = unlikely(addr == MAP_FAILED);
+    int err = mmap_failed ? errno : 0;
+    close(fd);
+    if (mmap_failed) {
+        errno = err;
+        perror("mmap");
+        return NULL;
     }
 
-    return FTW_CONTINUE;
+    return addr;
 }
 
-static int perfile(const char *f, const struct stat *s, int t, struct FTW *w)
-{
-    if (t == FTW_F) {
-        Language lang = detect_language(f, w->base, w->level, s->st_size);
-        Parser parser = languages[lang].parser;
-        if (parser) {
-            const char *name = languages[lang].name;
-            LineCount c = parser(f, s->st_size);
-            printf("%'8ju  %-12s %s\n", (uintmax_t)c.code, name, f);
+static int count_lines (
+    const char *path,
+    const struct stat *s,
+    int type,
+    struct FTW *w
+) {
+    switch (type) {
+    case FTW_F: // File
+        break;
+    case FTW_D: // Directory
+        return is_ignored_dir(path, w) ? FTW_SKIP_SUBTREE : FTW_CONTINUE;
+    default:
+        return FTW_CONTINUE;
+    }
+
+    Language lang = detect_language(path, w->base, w->level);
+    FileAndLineCount *count = &counts[lang];
+    const Parser parser = languages[lang].parser;
+    uintmax_t code_lines = 0;
+    count->files++;
+    if (!parser) {
+        // lang == UNKNOWN || lang == IGNORED
+        if (outflags & OFLAG_SHOW_UNKNOWN) {
+            goto maybe_print;
         }
-    } else if (is_ignored_dir(f + w->base, t, w->level)) {
-        return FTW_SKIP_SUBTREE;
+        return FTW_CONTINUE;
+    }
+
+    const size_t size = s->st_size;
+    if (size == 0) {
+        goto maybe_print;
+    }
+
+    char *text = mmapfile(path, size);
+    if (!text) {
+        return FTW_CONTINUE;
+    }
+
+    LineCount c = parser(text, size);
+    code_lines = c.code;
+    count->code += c.code;
+    count->comment += c.comment;
+    count->blank += c.blank;
+    munmap(text, size);
+
+maybe_print:
+    if (outflags & OFLAG_PER_FILE) {
+        const char *lang_name = languages[lang].name;
+        printf("%'8ju  %-12s %s\n", code_lines, lang_name, clean_path(path));
     }
 
     return FTW_CONTINUE;
@@ -211,7 +252,7 @@ static void print_summary(void)
 
         // The array indices no longer correspond to Language enum
         // values after sorting, so each entry must be tagged such
-        // that the name can be looked up by the loop futher below
+        // that the name can be looked up by the loop further below
         c->lang = lang;
 
         if (c->files == 0) {
@@ -288,23 +329,26 @@ int main(int argc, char *argv[])
         "Options:\n\n"
         "   -s   Show line counts per language (default)\n"
         "   -i   Show line counts per file\n"
-        "   -d   Show detected file types\n"
+        "   -d   Like -i, but also showing unknown/ignored files\n"
+        "   -a   All of the above (equivalent to -sid)\n"
         "   -h   Show usage information\n"
     ;
 
-    int (*cb)(const char*, const struct stat*, int, struct FTW*) = summary;
     setlocale(LC_ALL, "");
 
-    for (int opt; (opt = getopt(argc, argv, "sidh")) != -1; ) {
+    for (int opt; (opt = getopt(argc, argv, "sidah")) != -1; ) {
         switch (opt) {
-        case 'd':
-            cb = detect;
+        case 'a':
+            outflags |= OFLAG_SHOW_UNKNOWN | OFLAG_PER_FILE | OFLAG_TOTALS;
             continue;
-        case 's':
-            cb = summary;
+        case 'd':
+            outflags |= OFLAG_SHOW_UNKNOWN | OFLAG_PER_FILE;
             continue;
         case 'i':
-            cb = perfile;
+            outflags |= OFLAG_PER_FILE;
+            continue;
+        case 's':
+            outflags |= OFLAG_TOTALS;
             continue;
         case 'h':
             puts(help);
@@ -316,6 +360,9 @@ int main(int argc, char *argv[])
             return EX_SOFTWARE;
         }
     }
+
+    // Default to showing just the totals, if no flags are specified
+    outflags |= outflags ? 0 : OFLAG_TOTALS;
 
     for (int i = optind; i < argc; i++) {
         const char *path = argv[i];
@@ -331,26 +378,29 @@ int main(int argc, char *argv[])
         reset = "\033[0m";
     }
 
-    if (cb == perfile) {
+    if (outflags & OFLAG_PER_FILE) {
         printf("%s%8s  %-12s File%s\n", bold, "SLOC", "Language", reset);
     }
 
     for (int i = optind; i < argc; i++) {
         const char *path = argv[i];
-        if (nftw(path, cb, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
+        if (nftw(path, count_lines, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
             perror("nftw");
             return EX_IOERR;
         }
     }
 
     if (optind == argc) {
-        if (nftw(".", cb, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
+        if (nftw(".", count_lines, 20, FTW_PHYS | FTW_ACTIONRETVAL) == -1) {
             perror("nftw");
             return EX_IOERR;
         }
     }
 
-    if (cb == summary) {
+    if (outflags & OFLAG_TOTALS) {
+        if (outflags & OFLAG_PER_FILE) {
+            fputc('\n', stdout);
+        }
         print_summary();
     }
 

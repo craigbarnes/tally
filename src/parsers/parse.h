@@ -10,7 +10,7 @@ typedef struct {
     uint64_t blank;
 } LineCount;
 
-typedef LineCount (*Parser)(const char*, size_t);
+typedef LineCount (*Parser)(const char *text, size_t len);
 
 LineCount parse_c(const char*, size_t);
 LineCount parse_config(const char*, size_t);

@@ -33,13 +33,12 @@
 
 }%%
 
-LineCount parse_meson(const char *path, size_t size)
+LineCount parse_meson(const char *text, size_t size)
 {
-    init(path, size);
+    init(text, size);
     %% write init;
     cs = meson_en_line;
     %% write exec;
     process_last_line();
-    deinit();
     return (LineCount){.code = ncode, .comment = ncomment, .blank = nblank};
 }

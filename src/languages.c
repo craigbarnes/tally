@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <string.h>
 #include <unistd.h>
 #include "languages.h"
@@ -12,9 +11,9 @@ static const char *file_extension(const char *filename)
     return dot + 1;
 }
 
-Language detect_language(const char *path, int base, int level, size_t size)
+Language detect_language(const char *path, int base, int level)
 {
-    if (size == 0 || access(path, R_OK) != 0) {
+    if (access(path, R_OK) != 0) {
         return IGNORED;
     }
 

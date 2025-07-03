@@ -43,13 +43,12 @@
 
 }%%
 
-LineCount parse_python(const char *path, size_t size)
+LineCount parse_python(const char *text, size_t size)
 {
-    init(path, size);
+    init(text, size);
     %% write init;
     cs = python_en_line;
     %% write exec;
     process_last_line();
-    deinit();
     return (LineCount){.code = ncode, .comment = ncomment, .blank = nblank};
 }
