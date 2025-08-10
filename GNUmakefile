@@ -1,6 +1,8 @@
 include mk/compat.mk
 include mk/util.mk
--include Config.mk
+ifneq "$(NO_CONFIG_MK)" "1"
+  -include Config.mk
+endif
 include mk/build.mk
 
 prefix ?= /usr/local
