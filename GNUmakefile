@@ -26,8 +26,8 @@ uninstall:
 	$(RM) '$(DESTDIR)$(bindir)/tally'
 	$(RM) '$(DESTDIR)$(man1dir)/tally.1'
 
-tags: src/tally.c src/parse.[ch] src/languages.[ch]
-	$(CTAGS) -f $@ $^
+tags:
+	$(CTAGS) src/*.[ch] src/parsers/*.h
 
 clean:
 	$(RM) $(CLEANFILES)
@@ -35,5 +35,5 @@ clean:
 
 
 .DEFAULT_GOAL = all
-.PHONY: install uninstall clean
+.PHONY: install uninstall tags clean
 .DELETE_ON_ERROR:
