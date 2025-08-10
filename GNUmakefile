@@ -1,4 +1,13 @@
 include mk/compat.mk
+
+filter-cmdgoals = $(filter $(1), $(or $(MAKECMDGOALS),all))
+
+ifeq "" "$(call filter-cmdgoals, clean)"
+  # Generate and load this makefile only if $(MAKECMDGOALS) contains
+  # a target other than those listed above
+  include build/gen/compiler.mk
+endif
+
 include mk/util.mk
 ifneq "$(NO_CONFIG_MK)" "1"
   -include Config.mk
