@@ -243,11 +243,16 @@ static int compare(const void *p1, const void *p2)
 
 static void print_summary(void)
 {
+    static_assert(UNKNOWN == 0);
+    static_assert(IGNORED == 1);
+    static_assert(ADA == 2);
+    const Language first = ADA;
+
     FileAndLineCount total = {0};
     uint64_t total_lines = 0;
     unsigned int nlangs = 0;
 
-    for (Language lang = 2; lang < NUM_LANGUAGES; lang++) {
+    for (Language lang = first; lang < NUM_LANGUAGES; lang++) {
         FileAndLineCount *c = &counts[lang];
 
         // The array indices no longer correspond to Language enum
@@ -272,14 +277,14 @@ static void print_summary(void)
         return;
     }
 
-    qsort(counts + 2, NUM_LANGUAGES - 2, sizeof(FileAndLineCount), compare);
+    qsort(counts + first, NUM_LANGUAGES - first, sizeof(FileAndLineCount), compare);
 
     printf (
         "%s%-15s %10s %10s %10s %10s %10s%s\n",
         bold, "Language", "Files", "Code", "Comment", "Blank", "Lines", reset
     );
 
-    for (size_t i = 2; i < NUM_LANGUAGES; i++) {
+    for (size_t i = first; i < NUM_LANGUAGES; i++) {
         const FileAndLineCount *c = &counts[i];
         if (c->files == 0) {
             continue;
